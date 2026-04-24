@@ -1,0 +1,57 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	<TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
+	<ImplicitUsings>enable</ImplicitUsings>
+	<Nullable>disable</Nullable>
+	<SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
+	<AssemblyTitle>NativeNet</AssemblyTitle>
+	<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+	<GenerateDocumentationFile>True</GenerateDocumentationFile>
+	<PlatformTarget>AnyCPU</PlatformTarget>
+	<OutputType>Library</OutputType>
+	<AssemblyVersion>2026.0</AssemblyVersion>
+	<FileVersion>2026.0</FileVersion>
+	<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+	<Title>NativeNet</Title>
+	<LangVersion>12.0</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	<Optimize>True</Optimize>
+	<IsAotCompatible>False</IsAotCompatible>
+	<WarningLevel>6</WarningLevel>
+	<TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+	<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+	<IsPublishable>False</IsPublishable>
+	<IsTrimmable>False</IsTrimmable>
+	<NoWarn>1701;1702;CS1570;CS1587;CS1591;CA1050;IDE1006;</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+	<IsAotCompatible>False</IsAotCompatible>
+	<WarningLevel>6</WarningLevel>
+	<TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+	<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+	<IsPublishable>False</IsPublishable>
+	<Optimize>True</Optimize>
+	<IsTrimmable>False</IsTrimmable>
+	<NoWarn>1701;1702;CS1570;CS1587;CS1591;CA1050;IDE1006;</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+	<Compile Update="Properties\Resources.Designer.cs">
+	  <DesignTime>True</DesignTime>
+	  <AutoGen>True</AutoGen>
+	  <DependentUpon>Resources.resx</DependentUpon>
+	</Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+	<EmbeddedResource Update="Properties\Resources.resx">
+	  <Generator>ResXFileCodeGenerator</Generator>
+	  <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+	</EmbeddedResource>
+  </ItemGroup>
+
+</Project>
