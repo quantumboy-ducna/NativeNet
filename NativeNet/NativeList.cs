@@ -4,13 +4,14 @@
 /// <remarks>
 ///		Required Notice: Copyright@2026 QuantumBoy1010 (https://www.github.com/QuantumBoy1010/)
 /// </remarks>
-
 #pragma warning disable CS0693
 #pragma warning disable CS8500
 #pragma warning disable IDE0047
 #pragma warning disable IDE0054
 
 /** Inclusion(s) of the standard C# namespace(s).**/
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 
@@ -104,16 +105,30 @@ namespace NativeNet
 		/// </summary>
 		/// <param name="index"></param>
 		/// <returns>GenericType</returns>
+		/// <exception cref="Exception"></exception>
 		public GenericType this[int index]
 		{
 			get
 			{
-				return (this.bufferPointer)[index];
+				if ((index >= this.size) || (index < 0))
+				{
+					throw new Exception("Argument `index` is out of bound: `" + Convert.ToString(index) + "`.");
+				}
+				else
+				{
+					return (this.bufferPointer)[index];
+				}
 			}
-
 			set
 			{
-				(this.bufferPointer)[index] = value;
+				if ((index >= this.size) || (index < 0))
+				{
+					throw new Exception("Argument `index` is out of bound: `" + Convert.ToString(index) + "`.");
+				}
+				else
+				{
+					(this.bufferPointer)[index] = value;
+				}
 			}
 		}
 
@@ -273,6 +288,19 @@ namespace NativeNet
 		{
 			GC.SuppressFinalize(this);
 			Marshal.FreeHGlobal((nint)(this.bufferPointer));
+		}
+
+		/// <summary>
+		///		static
+		/// </summary>
+		/// <param name="index"></param>
+		/// <returns>void</returns>
+		/// <exception cref="Exception"></exception>
+		[DoesNotReturn]
+		[MethodImpl(MethodImplOptions.NoInlining)]
+		private static void throwOutOfBoundException(int index)
+		{
+			throw new Exception("Argument `index` is out of bound: `" + Convert.ToString(index) + "`.");
 		}
 
 		/// <summary>
