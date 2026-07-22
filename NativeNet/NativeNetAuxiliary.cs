@@ -17,20 +17,35 @@
 ///		For commercial licensing inquiries, pricing, or to obtain a proprietary license agreement, please contact: workofduc@gmail.com
 /// </remarks>
 
+/** Inclusion(s) of the standard C# namespace(s).**/
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
+
 
 /** Main code.**/
 
 /// <summary>
-///		C# type name alias: `char8_t`.
+///		C# namespace: `NativeNet`.
 /// </summary>
-global using char8_t = byte;
+namespace NativeNet
+{
+	/// <summary>
+	///		C# class: `NativeNetAuxiliary`.
+	/// </summary>
+	public static class NativeNetAuxiliary
+	{
 
-/// <summary>
-///		C# type name alias: `char16_t`.
-/// </summary>
-global using char16_t = char;
-
-/// <summary>
-///		C# type name alias: `char32_t`.
-/// </summary>
-global using char32_t = NativeNet.UTF32Character;
+		/// <summary>
+		///		static
+		/// </summary>
+		/// <param name="index"></param>
+		/// <returns>void</returns>
+		/// <exception cref="Exception"></exception>
+		[DoesNotReturn]
+		[MethodImpl(MethodImplOptions.NoInlining)]
+		public static void throwOutOfBoundException(int index)
+		{
+			throw new Exception("Argument `index` is out of bound: `" + Convert.ToString(index) + "`.");
+		}
+	};
+};

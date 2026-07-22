@@ -2,16 +2,27 @@
 ///		Legal & Licensing Information
 /// </summary>
 /// <remarks>
-///		Required Notice: Copyright@2026 QuantumBoy1010 (https://www.github.com/QuantumBoy1010/)
+///		Required Notice: Copyright©2026, Nguyễn Anh Đức (workofduc@gmail.com). All Rights Reserved.
+///
+///		DUAL-LICENSING MODEL:
+///		This software is dual-licensed to accommodate both open-source development and proprietary commercial use.
+///
+///		OPEN-SOURCE TRACK (GPLv3):
+///		This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+///
+///		COMMERCIAL TRACK:
+///		For commercial entities wishing to embed this software into proprietary, closed-source software, a separate commercial license is required. This grants the legal right to use the library without being bound by the GPLv3 copyleft requirements.
+///
+///		CONTACT:
+///		For commercial licensing inquiries, pricing, or to obtain a proprietary license agreement, please contact: workofduc@gmail.com
 /// </remarks>
+
 #pragma warning disable CS0693
 #pragma warning disable CS8500
 #pragma warning disable IDE0047
 #pragma warning disable IDE0054
 
 /** Inclusion(s) of the standard C# namespace(s).**/
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 
@@ -40,7 +51,7 @@ namespace NativeNet
 		{
 			this.size = 0;
 			this.capacity = 1;
-			this.bufferPointer = (GenericType*)(Marshal.AllocHGlobal(sizeof(GenericType) * this.capacity).ToPointer());
+			this.bufferPointer = (GenericType*)(NativeMemory.Alloc((nuint)(sizeof(GenericType) * this.capacity)));
 		}
 
 		/// <summary>
@@ -60,7 +71,7 @@ namespace NativeNet
 				this.capacity = capacity;
 			}
 
-			this.bufferPointer = (GenericType*)(Marshal.AllocHGlobal(sizeof(GenericType) * this.capacity).ToPointer());
+			this.bufferPointer = (GenericType*)(NativeMemory.Alloc((nuint)(sizeof(GenericType) * this.capacity)));
 		}
 
 		/// <summary>
@@ -78,7 +89,7 @@ namespace NativeNet
 			{
 				this.size = other.size;
 				this.capacity = other.capacity;
-				this.bufferPointer = (GenericType*)(Marshal.AllocHGlobal(sizeof(GenericType) * this.capacity).ToPointer());
+				this.bufferPointer = (GenericType*)(NativeMemory.Alloc((nuint)(sizeof(GenericType) * this.capacity)));
 				int i = 0;
 
 				for (i = 0;i < this.size;i++)
@@ -93,7 +104,7 @@ namespace NativeNet
 		/// </summary>
 		~NativeList()
 		{
-			Marshal.FreeHGlobal((nint)(this.bufferPointer));
+			NativeMemory.Free(this.bufferPointer);
 			this.size = 0;
 			this.capacity = 0;
 			this.bufferPointer = null;
@@ -105,14 +116,15 @@ namespace NativeNet
 		/// </summary>
 		/// <param name="index"></param>
 		/// <returns>GenericType</returns>
-		/// <exception cref="Exception"></exception>
 		public GenericType this[int index]
 		{
 			get
 			{
 				if ((index >= this.size) || (index < 0))
 				{
-					throw new Exception("Argument `index` is out of bound: `" + Convert.ToString(index) + "`.");
+					NativeNetAuxiliary.throwOutOfBoundException(index);
+
+					return default;
 				}
 				else
 				{
@@ -123,7 +135,7 @@ namespace NativeNet
 			{
 				if ((index >= this.size) || (index < 0))
 				{
-					throw new Exception("Argument `index` is out of bound: `" + Convert.ToString(index) + "`.");
+					NativeNetAuxiliary.throwOutOfBoundException(index);
 				}
 				else
 				{
@@ -287,20 +299,7 @@ namespace NativeNet
 		void IDisposable.Dispose()
 		{
 			GC.SuppressFinalize(this);
-			Marshal.FreeHGlobal((nint)(this.bufferPointer));
-		}
-
-		/// <summary>
-		///		static
-		/// </summary>
-		/// <param name="index"></param>
-		/// <returns>void</returns>
-		/// <exception cref="Exception"></exception>
-		[DoesNotReturn]
-		[MethodImpl(MethodImplOptions.NoInlining)]
-		private static void throwOutOfBoundException(int index)
-		{
-			throw new Exception("Argument `index` is out of bound: `" + Convert.ToString(index) + "`.");
+			NativeMemory.Free(this.bufferPointer);
 		}
 
 		/// <summary>
@@ -312,14 +311,14 @@ namespace NativeNet
 			if (this.capacity == 0)
 			{
 				this.capacity = this.capacity + 1;
-				GenericType* newBufferPointer = (GenericType*)(Marshal.AllocHGlobal(sizeof(GenericType) * this.capacity).ToPointer());
-				Marshal.FreeHGlobal((nint)(this.bufferPointer));
+				GenericType* newBufferPointer = (GenericType*)(NativeMemory.Alloc((nuint)(sizeof(GenericType) * this.capacity)));
+				NativeMemory.Free(this.bufferPointer);
 				this.bufferPointer = newBufferPointer;
 			}
 			else
 			{
 				this.capacity = this.capacity * 2;
-				GenericType* newBufferPointer = (GenericType*)(Marshal.AllocHGlobal(sizeof(GenericType) * this.capacity).ToPointer());
+				GenericType* newBufferPointer = (GenericType*)(NativeMemory.Alloc((nuint)(sizeof(GenericType) * this.capacity)));
 				int i = 0;
 
 				for (i = 0;i < this.size;i++)
@@ -327,7 +326,7 @@ namespace NativeNet
 					newBufferPointer[i] = (this.bufferPointer)[i];
 				}
 
-				Marshal.FreeHGlobal((nint)(this.bufferPointer));
+				NativeMemory.Free(this.bufferPointer);
 				this.bufferPointer = newBufferPointer;
 			}
 		}

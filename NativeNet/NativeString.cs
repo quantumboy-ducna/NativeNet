@@ -2,8 +2,23 @@
 ///		Legal & Licensing Information
 /// </summary>
 /// <remarks>
-///		Required Notice: Copyright@2026 QuantumBoy1010 (https://www.github.com/QuantumBoy1010/)
+///		Required Notice: Copyright©2026, Nguyễn Anh Đức (workofduc@gmail.com). All Rights Reserved.
+///
+///		DUAL-LICENSING MODEL:
+///		This software is dual-licensed to accommodate both open-source development and proprietary commercial use.
+///
+///		OPEN-SOURCE TRACK (GPLv3):
+///		This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+///
+///		COMMERCIAL TRACK:
+///		For commercial entities wishing to embed this software into proprietary, closed-source software, a separate commercial license is required. This grants the legal right to use the library without being bound by the GPLv3 copyleft requirements.
+///
+///		CONTACT:
+///		For commercial licensing inquiries, pricing, or to obtain a proprietary license agreement, please contact: workofduc@gmail.com
 /// </remarks>
+
+#pragma warning disable IDE0017
+#pragma warning disable IDE0090
 
 /** Inclusion(s) of the standard C# namespace(s).**/
 using System.Runtime.InteropServices;
@@ -141,7 +156,7 @@ namespace NativeNet
 
 					for (i = 0;i < first.length;i++)
 					{
-						if ((first.bufferPointer)[i].Equals((second.bufferPointer)[i]) == false)
+						if (((first.bufferPointer)[i]).Equals((second.bufferPointer)[i]) == false)
 						{
 							return false;
 						}
@@ -181,7 +196,7 @@ namespace NativeNet
 
 					for (i = 0;i < first.length;i++)
 					{
-						if ((first.bufferPointer)[i].Equals((second.bufferPointer)[i]) == false)
+						if (((first.bufferPointer)[i]).Equals((second.bufferPointer)[i]) == false)
 						{
 							return true;
 						}
@@ -209,7 +224,7 @@ namespace NativeNet
 			{
 				NativeString<GenericTypeOfCharacter> result = new NativeString<GenericTypeOfCharacter>();
 				result.length = first.length + second.length;
-				result.bufferPointer = (GenericTypeOfCharacter*)NativeMemory.Alloc((nuint)(sizeof(GenericTypeOfCharacter) * result.length));
+				result.bufferPointer = (GenericTypeOfCharacter*)(NativeMemory.Alloc((nuint)(sizeof(GenericTypeOfCharacter) * result.length)));
 				Buffer.MemoryCopy(first.bufferPointer,result.bufferPointer,sizeof(GenericTypeOfCharacter) * first.length,sizeof(GenericTypeOfCharacter) * first.length);
 				Buffer.MemoryCopy(second.bufferPointer,result.bufferPointer + first.length,sizeof(GenericTypeOfCharacter) * second.length,sizeof(GenericTypeOfCharacter) * second.length);
 
@@ -230,7 +245,9 @@ namespace NativeNet
 			{
 				if ((index >= this.length) || (index < 0))
 				{
-					throw new Exception("Argument `index` is out of bound: `" + Convert.ToString(index) + "`.");
+					NativeNetAuxiliary.throwOutOfBoundException(index);
+
+					return default;
 				}
 				else
 				{
