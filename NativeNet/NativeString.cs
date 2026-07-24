@@ -2,25 +2,28 @@
 ///		Legal & Licensing Information
 /// </summary>
 /// <remarks>
-///		Required Notice: Copyright©2026, Nguyễn Anh Đức (workofduc@gmail.com). All Rights Reserved.
+///		Required Notice: Copyright©2026,Nguyễn Anh Đức (workofduc@gmail.com). All Rights Reserved.
 ///
 ///		DUAL-LICENSING MODEL:
 ///		This software is dual-licensed to accommodate both open-source development and proprietary commercial use.
 ///
 ///		OPEN-SOURCE TRACK (GPLv3):
-///		This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+///		This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation,either version 3 of the License,or (at your option) any later version.
 ///
 ///		COMMERCIAL TRACK:
-///		For commercial entities wishing to embed this software into proprietary, closed-source software, a separate commercial license is required. This grants the legal right to use the library without being bound by the GPLv3 copyleft requirements.
+///		For commercial entities wishing to embed this software into proprietary,closed-source software,a separate commercial license is required. This grants the legal right to use the library without being bound by the GPLv3 copyleft requirements.
 ///
 ///		CONTACT:
-///		For commercial licensing inquiries, pricing, or to obtain a proprietary license agreement, please contact: workofduc@gmail.com
+///		For commercial licensing inquiries,pricing,or to obtain a proprietary license agreement,please contact: workofduc@gmail.com
 /// </remarks>
 
+#pragma warning disable IDE0003
 #pragma warning disable IDE0017
+#pragma warning disable IDE0047
 #pragma warning disable IDE0090
 
 /** Inclusion(s) of the standard C# namespace(s).**/
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -36,10 +39,11 @@ namespace NativeNet
 	///		C# class: `NativeString`.
 	/// </summary>
 	/// <typeparam name="GenericTypeOfCharacter"></typeparam>
-	public unsafe sealed class NativeString<GenericTypeOfCharacter> : IDisposable where GenericTypeOfCharacter : unmanaged
+	public unsafe sealed class NativeString<GenericTypeOfCharacter> : IDisposable where GenericTypeOfCharacter : unmanaged,CharacterTraits<GenericTypeOfCharacter>
 	{
 		private GenericTypeOfCharacter* bufferPointer;
 		private int length;
+		private int capacity;
 
 
 		/// <summary>
@@ -49,52 +53,67 @@ namespace NativeNet
 		{
 			this.bufferPointer = null;
 			this.length = 0;
+			this.capacity = 0;
 		}
 
 		/// <summary>
 		///		Constructor of `NativeString`.
 		/// </summary>
 		/// <param name="primitiveString"></param>
-		/// <exception cref="Exception"></exception>
+		/// <exception cref="NativeNetException"></exception>
 		public NativeString(string primitiveString)
 		{
 			if (primitiveString is null)
 			{
-				throw new Exception("Can't instantiate an instance of `NativeString` by the constructor of `NativeString` from a nulled argument `primitiveString`!");
+				throw new NativeNetException("Can't instantiate an instance of `NativeString` by the constructor of `NativeString` from a nulled argument `primitiveString`!");
 			}
 			else
 			{
+				this.capacity = primitiveString.Length;
 				this.length = primitiveString.Length;
-				this.bufferPointer = (GenericTypeOfCharacter*)NativeMemory.Alloc((uint)(sizeof(GenericTypeOfCharacter) * this.length),8);
+				this.bufferPointer = (GenericTypeOfCharacter*)(NativeMemory.Alloc((uint)(sizeof(GenericTypeOfCharacter) * this.length),8));
 
 				if (typeof(GenericTypeOfCharacter) == typeof(char8_t))
 				{
-					byte[] byteArray = Encoding.UTF8.GetBytes([.. primitiveString]);
+					byte[] utf8Bytes = Encoding.UTF8.GetBytes(primitiveString);
+					this.length = utf8Bytes.Length;
+					this.capacity = this.length;
+					uint byteCount = (uint)this.length;
+					this.bufferPointer = (GenericTypeOfCharacter*)(NativeMemory.Alloc(byteCount));
 
-					fixed (byte* characterPointer = byteArray)
+					fixed (byte* bytePointer = utf8Bytes)
 					{
-						Buffer.MemoryCopy(characterPointer,this.bufferPointer,sizeof(GenericTypeOfCharacter) * this.length,sizeof(char) * primitiveString.Length);
+						Unsafe.CopyBlock(this.bufferPointer,bytePointer,byteCount);
 					}
 				}
 				else if (typeof(GenericTypeOfCharacter) == typeof(char16_t))
 				{
+					this.length = primitiveString.Length;
+					this.capacity = this.length;
+					uint byteCount = (uint)(sizeof(GenericTypeOfCharacter) * this.length);
+					this.bufferPointer = (GenericTypeOfCharacter*)(NativeMemory.Alloc(byteCount));
+
 					fixed (char* characterPointer = primitiveString)
 					{
-						Buffer.MemoryCopy(characterPointer,this.bufferPointer,sizeof(GenericTypeOfCharacter) * this.length,sizeof(char) * primitiveString.Length);
+						Unsafe.CopyBlock(this.bufferPointer,characterPointer,byteCount);
 					}
 				}
 				else if (typeof(GenericTypeOfCharacter) == typeof(char32_t))
 				{
-					byte[] byteArray = Encoding.UTF8.GetBytes([.. primitiveString]);
+					byte[] utf32Bytes = Encoding.UTF32.GetBytes(primitiveString);
+					this.length = utf32Bytes.Length / 4;
+					this.capacity = this.length;
+					uint byteCount = (uint)(sizeof(GenericTypeOfCharacter) * this.length);
+					this.bufferPointer = (GenericTypeOfCharacter*)(NativeMemory.Alloc(byteCount));
 
-					fixed (byte* characterPointer = byteArray)
+					fixed (byte* bytePointer = utf32Bytes)
 					{
-						Buffer.MemoryCopy(characterPointer,this.bufferPointer,sizeof(GenericTypeOfCharacter) * this.length,sizeof(char) * primitiveString.Length);
+						Unsafe.CopyBlock(this.bufferPointer,bytePointer,byteCount);
 					}
 				}
 				else
 				{
-					throw new Exception("Can't instantiate an instance of `NativeString` by the constructor of `NativeString` from an invalid generic type argument: `" + typeof(GenericTypeOfCharacter).Name + "`!");
+					throw new NativeNetException("Can't instantiate an instance of `NativeString` by the constructor of `NativeString` from an invalid generic type argument: `" + typeof(GenericTypeOfCharacter).Name + "`!");
 				}
 			}
 		}
@@ -103,18 +122,19 @@ namespace NativeNet
 		///		Copy constructor of `NativeString`.
 		/// </summary>
 		/// <param name="other"></param>
-		/// <exception cref="Exception"></exception>
+		/// <exception cref="NativeNetException"></exception>
 		public NativeString(NativeString<GenericTypeOfCharacter> other)
 		{
 			if (other is null)
 			{
-				throw new Exception("Can't instantiate an instance of `NativeString` by the copy constructor of `NativeString` from a nulled argument `other`!");
+				throw new NativeNetException("Can't instantiate an instance of `NativeString` by the copy constructor of `NativeString` from a nulled argument `other`!");
 			}
 			else
 			{
+				this.capacity = other.capacity;
 				this.length = other.length;
-				this.bufferPointer = (GenericTypeOfCharacter*)Marshal.AllocHGlobal(sizeof(GenericTypeOfCharacter) * this.length);
-				Buffer.MemoryCopy(other.bufferPointer,this.bufferPointer,sizeof(GenericTypeOfCharacter) * this.length,sizeof(GenericTypeOfCharacter) * other.length);
+				this.bufferPointer = (GenericTypeOfCharacter*)(NativeMemory.Alloc((nuint)(sizeof(GenericTypeOfCharacter) * this.length)));
+				Unsafe.CopyBlock(this.bufferPointer,other.bufferPointer,(uint)(sizeof(GenericTypeOfCharacter) * this.length));
 			}
 		}
 
@@ -124,7 +144,9 @@ namespace NativeNet
 		~NativeString()
 		{
 			NativeMemory.Free(this.bufferPointer);
+			this.bufferPointer = null;
 			this.length = 0;
+			this.capacity = 0;
 		}
 
 		/// <summary>
@@ -152,17 +174,7 @@ namespace NativeNet
 				}
 				else
 				{
-					int i = 0;
-
-					for (i = 0;i < first.length;i++)
-					{
-						if (((first.bufferPointer)[i]).Equals((second.bufferPointer)[i]) == false)
-						{
-							return false;
-						}
-					}
-
-					return true;
+					return ((new ReadOnlySpan<byte>(first.bufferPointer, first.length * sizeof(GenericTypeOfCharacter))).SequenceEqual(new ReadOnlySpan<byte>(second.bufferPointer, second.length * sizeof(GenericTypeOfCharacter))) == true);
 				}
 			}
 		}
@@ -192,17 +204,7 @@ namespace NativeNet
 				}
 				else
 				{
-					int i = 0;
-
-					for (i = 0;i < first.length;i++)
-					{
-						if (((first.bufferPointer)[i]).Equals((second.bufferPointer)[i]) == false)
-						{
-							return true;
-						}
-					}
-
-					return false;
+					return ((new ReadOnlySpan<byte>(first.bufferPointer, first.length * sizeof(GenericTypeOfCharacter))).SequenceEqual(new ReadOnlySpan<byte>(second.bufferPointer, second.length * sizeof(GenericTypeOfCharacter))) == false);
 				}
 			}
 		}
@@ -238,7 +240,7 @@ namespace NativeNet
 		/// </summary>
 		/// <param name="index"></param>
 		/// <returns>GenericTypeOfCharacter</returns>
-		/// <exception cref="Exception"></exception>
+		/// <exception cref="NativeNetException"></exception>
 		public GenericTypeOfCharacter this[int index]
 		{
 			get
@@ -264,9 +266,9 @@ namespace NativeNet
 		/// <returns>bool</returns>
 		public override bool Equals(object other)
 		{
-			if (other is NativeString<GenericTypeOfCharacter> data)
+			if (other is NativeString<GenericTypeOfCharacter> instance)
 			{
-				return (this == data);
+				return (this == instance);
 			}
 			else
 			{
@@ -290,8 +292,15 @@ namespace NativeNet
 		/// <returns>void</returns>
 		void IDisposable.Dispose()
 		{
+			if (this.bufferPointer != null)
+			{
+				NativeMemory.Free(this.bufferPointer);
+				this.bufferPointer = null;
+			}
+
+			this.length = 0;
+			this.capacity = 0;
 			GC.SuppressFinalize(this);
-			NativeMemory.Free(this.bufferPointer);
 		}
 
 		/// <summary>
@@ -304,14 +313,216 @@ namespace NativeNet
 		}
 
 		/// <summary>
+		/// 	dynamic
+		/// </summary>
+		/// <param name="startingIndex"></param>
+		/// <param name="length"></param>
+		/// <returns>NativeString&lt;GenericTypeOfCharacter&gt;</returns>
+		public NativeString<GenericTypeOfCharacter> substring(int startingIndex,int length)
+		{
+			NativeString<GenericTypeOfCharacter> result = new NativeString<GenericTypeOfCharacter>();
+			result.length = length;
+			result.bufferPointer = (GenericTypeOfCharacter*)(NativeMemory.Alloc((nuint)(sizeof(GenericTypeOfCharacter) * length)));
+			Unsafe.CopyBlock(result.bufferPointer,this.bufferPointer + startingIndex,(uint)(sizeof(GenericTypeOfCharacter) * length));
+
+			return result;
+		}
+
+		/// <summary>
 		///		dynamic
 		/// </summary>
 		/// <param name="character"></param>
 		/// <returns>void</returns>
 		public void append(GenericTypeOfCharacter character)
 		{
-			NativeMemory.Realloc(this.bufferPointer,(nuint)(this.length + 1));
-			(this.bufferPointer)[this.length] = character;
+			(this.length)++;
+
+			if (this.length > this.capacity)
+			{
+				this.increaseCapacity();
+			}
+
+			(this.bufferPointer)[this.length - 1] = character;
+		}
+
+		/// <summary>
+		/// 	dynamic
+		/// </summary>
+		/// <param name="other"></param>
+		/// <returns>void</returns>
+		/// <exception cref="NativeNetException"></exception>
+		public void append(NativeString<GenericTypeOfCharacter> other)
+		{
+			if (other is null)
+			{
+				throw new NativeNetException("Argument `other` is null!");
+			}
+			else if (other.length > 0)
+			{
+				int oldLength = this.length;
+				this.length += other.length;
+
+				if (this.length > this.capacity)
+				{
+					this.increaseCapacity(this.length * 2);
+				}
+
+				Unsafe.CopyBlock(this.bufferPointer + oldLength,other.bufferPointer,(uint)(sizeof(GenericTypeOfCharacter) * other.length));
+			}
+		}
+
+		/// <summary>
+		/// 	dynamic
+		/// </summary>
+		/// <param name="character"></param>
+		/// <param name="index"></param>
+		/// <returns>void</returns>
+		public void insert(GenericTypeOfCharacter character,int index)
+		{
+			if ((index < 0) || (index >= this.length))
+			{
+				NativeNetAuxiliary.throwOutOfBoundException(index);
+			}
+			else
+			{
+				(this.length)++;
+
+				if (this.length > this.capacity)
+				{
+					this.increaseCapacity();
+				}
+
+				int i = 0;
+
+				for (i = (this.length - 1);i > index;i--)
+				{
+					(this.bufferPointer)[i] = (this.bufferPointer)[i - 1];
+				}
+
+				(this.bufferPointer)[index] = character;
+			}
+		}
+
+		/// <summary>
+		/// 	dynamic
+		/// </summary>
+		/// <param name="other"></param>
+		/// <param name="index"></param>
+		/// <returns>void</returns>
+		/// <exception cref="NativeNetException"></exception>
+		public void insert(NativeString<GenericTypeOfCharacter> other,int index)
+		{
+			if (other is null)
+			{
+				throw new NativeNetException("Argument `other` is null!");
+			}
+			else if ((index < 0) || (index >= this.length))
+			{
+				NativeNetAuxiliary.throwOutOfBoundException(index);
+			}
+			else if (other.length > 0)
+			{
+				this.length += other.length;
+
+				if (this.length > this.capacity)
+				{
+					this.increaseCapacity(this.length * 2);
+				}
+
+				int i = 0;
+
+				for (i = (this.length - 1);i > (index + other.length);i--)
+				{
+					(this.bufferPointer)[i] = (this.bufferPointer)[i - other.length];
+				}
+
+				Unsafe.CopyBlock(this.bufferPointer + index,other.bufferPointer,(uint)(sizeof(GenericTypeOfCharacter) * other.length));
+			}
+		}
+
+		/// <summary>
+		/// 	dynamic
+		/// </summary>
+		/// <param name="index"></param>
+		/// <returns>void</returns>
+		public void remove(int index)
+		{
+			if ((index < 0) || (index >= this.length))
+			{
+				NativeNetAuxiliary.throwOutOfBoundException(index);
+			}
+			else
+			{
+				int i = 0;
+
+				for (i = index;i < (this.length - 1);i++)
+				{
+					(this.bufferPointer)[i] = (this.bufferPointer)[i + 1];
+				}
+
+				(this.length)--;
+			}
+		}
+
+		/// <summary>
+		/// 	dynamic
+		/// </summary>
+		/// <returns>void</returns>
+		/// <exception cref="NativeNetException"></exception>
+		private void increaseCapacity()
+		{
+			try
+			{
+				if (this.capacity <= 0)
+				{
+					this.capacity = 1;
+				}
+				
+				int newCapacity = this.capacity * 2;
+				void* reallocatedMemoryPointer = NativeMemory.Realloc(this.bufferPointer,(nuint)(sizeof(GenericTypeOfCharacter) * newCapacity));
+
+				if (reallocatedMemoryPointer == null)
+				{
+					throw new NativeNetException("Can't increase the capacity of the current instance of `NativeString`!");
+				}
+				else
+				{
+					this.bufferPointer = (GenericTypeOfCharacter*)reallocatedMemoryPointer;
+					this.capacity = newCapacity;
+				}
+			}
+			catch (OutOfMemoryException exception)
+			{
+				throw new NativeNetException(exception.Message);
+			}
+		}
+
+		/// <summary>
+		/// 	dynamic
+		/// </summary>
+		/// <param name="newCapacity"></param>
+		/// <returns>void</returns>
+		/// <exception cref="NativeNetException"></exception>
+		private void increaseCapacity(int newCapacity)
+		{
+			try
+			{
+				this.capacity = newCapacity;
+				void* reallocatedMemoryPointer = NativeMemory.Realloc(this.bufferPointer,(nuint)(sizeof(GenericTypeOfCharacter) * this.capacity));
+
+				if (reallocatedMemoryPointer == null)
+				{
+					throw new NativeNetException("Can't increase the capacity of the current instance of `NativeString`!");
+				}
+				else
+				{
+					this.bufferPointer = (GenericTypeOfCharacter*)reallocatedMemoryPointer;
+				}
+			}
+			catch (OutOfMemoryException exception)
+			{
+				throw new NativeNetException(exception.Message);
+			}
 		}
 	};
 };

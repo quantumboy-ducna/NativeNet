@@ -19,6 +19,8 @@
 
 #pragma warning disable CS0693
 #pragma warning disable CS8500
+#pragma warning disable IDE0001
+#pragma warning disable IDE0003
 #pragma warning disable IDE0047
 #pragma warning disable IDE0054
 
@@ -78,12 +80,12 @@ namespace NativeNet
 		///		Copy constructor of `NativeList`.
 		/// </summary>
 		/// <param name="other"></param>
-		/// <exception cref="Exception"></exception>
+		/// <exception cref="NativeNetException"></exception>
 		public NativeList(NativeList<GenericType> other)
 		{
 			if (other is null)
 			{
-				throw new Exception("Can't instantiate an instance of `NativeList` by the copy constructor of `NativeList` from a nulled argument `other`!");
+				throw new NativeNetException("Can't instantiate an instance of `NativeList` by the copy constructor of `NativeList` from a nulled argument `other`!");
 			}
 			else
 			{
@@ -179,7 +181,7 @@ namespace NativeNet
 		{
 			if ((index >= this.size) || (index < 0))
 			{
-				throw new Exception("Argument `index` is out of bound: `" + Convert.ToString(index) + "`.");
+				throw new NativeNetException("Argument `index` is out of bound: `" + Convert.ToString(index) + "`.");
 			}
 			else
 			{
@@ -207,7 +209,7 @@ namespace NativeNet
 		/// <typeparam name="GenericType"></typeparam>
 		/// <param name="element"></param>
 		/// <returns>void</returns>
-		/// <exception cref="Exception"></exception>
+		/// <exception cref="NativeNetException"></exception>
 		public void remove<GenericType>(GenericType element) where GenericType : IComparable<GenericType>
 		{
 			int i = 0;
@@ -220,7 +222,7 @@ namespace NativeNet
 				}
 			}
 
-			throw new Exception("Argument `element` isn't found in the current instance of `NativeList`!");
+			throw new NativeNetException("Argument `element` isn't found in the current instance of `NativeList`!");
 		}
 
 		/// <summary>
@@ -228,12 +230,12 @@ namespace NativeNet
 		/// </summary>
 		/// <param name="index"></param>
 		/// <returns>void</returns>
-		/// <exception cref="Exception"></exception>
+		/// <exception cref="NativeNetException"></exception>
 		public void removeByIndex(int index)
 		{
 			if ((index >= this.size) || (index < 0))
 			{
-				throw new Exception("Argument `index` is out of bound: `" + Convert.ToString(index) + "`.");
+				throw new NativeNetException("Argument `index` is out of bound: `" + Convert.ToString(index) + "`.");
 			}
 			else
 			{
@@ -254,7 +256,7 @@ namespace NativeNet
 		/// <typeparam name="GenericType"></typeparam>
 		/// <param name="element"></param>
 		/// <returns>int</returns>
-		/// <exception cref="Exception"></exception>
+		/// <exception cref="NativeNetException"></exception>
 		public int getFirstIndexOfElement<GenericType>(GenericType element) where GenericType : IComparable<GenericType>
 		{
 			int i = 0;
@@ -267,7 +269,7 @@ namespace NativeNet
 				}
 			}
 
-			throw new Exception("Argument `element` isn't found in the current instance of `NativeList`!");
+			throw new NativeNetException("Argument `element` isn't found in the current instance of `NativeList`!");
 		}
 
 		/// <summary>
@@ -276,7 +278,7 @@ namespace NativeNet
 		/// <typeparam name="GenericType"></typeparam>
 		/// <param name="element"></param>
 		/// <returns>int</returns>
-		/// <exception cref="Exception"></exception>
+		/// <exception cref="NativeNetException"></exception>
 		public int getLastIndexOfElement<GenericType>(GenericType element) where GenericType : IComparable<GenericType>
 		{
 			int i = this.size - 1;
@@ -289,7 +291,7 @@ namespace NativeNet
 				}
 			}
 
-			throw new Exception("Argument `element` isn't found in the current instance of `NativeList`!");
+			throw new NativeNetException("Argument `element` isn't found in the current instance of `NativeList`!");
 		}
 
 		/// <summary>

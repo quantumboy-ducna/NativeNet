@@ -17,6 +17,10 @@
 ///		For commercial licensing inquiries, pricing, or to obtain a proprietary license agreement, please contact: workofduc@gmail.com
 /// </remarks>
 
+#pragma warning disable IDE0001
+#pragma warning disable IDE0003
+#pragma warning disable IDE0047
+
 /** Inclusion(s) of the standard C# namespace(s).**/
 using System.Text;
 
@@ -31,7 +35,7 @@ namespace NativeNet
 	/// <summary>
 	///		C# interface: `CharacterTraits`.
 	/// </summary>
-	internal interface CharacterTraits<GenericTypeOfCharacter> where GenericTypeOfCharacter : CharacterTraits<GenericTypeOfCharacter>
+	public interface CharacterTraits<GenericTypeOfCharacter> where GenericTypeOfCharacter : CharacterTraits<GenericTypeOfCharacter>
 	{
 		/// <summary>
 		///		static
@@ -63,6 +67,24 @@ namespace NativeNet
 
 
 		/// <summary>
+		/// 	Constructor of `UTF32Character`.
+		/// </summary>
+		/// <param name="utf8CharacterData"></param>
+		public UTF32Character(byte utf8CharacterData)
+		{
+			this.composedData = (new Rune(utf8CharacterData)).Value;
+		}
+
+		/// <summary>
+		/// 	Constructor of `UTF32Character`.
+		/// </summary>
+		/// <param name="utf16CharacterData"></param>
+		public UTF32Character(char utf16CharacterData)
+		{
+			this.composedData = (new Rune(utf16CharacterData)).Value;
+		}
+
+		/// <summary>
 		///		Constructor of `UTF32Character`.
 		/// </summary>
 		/// <param name="codePoint"></param>
@@ -85,10 +107,35 @@ namespace NativeNet
 		///		implicit
 		///		operator UTF32Character()
 		/// </summary>
-		/// <param name="utf16Character"></param>
-		public static implicit operator UTF32Character(char utf16Character)
+		/// <param name="byteData"></param>
+		/// <returns>UTF32Character</returns>
+		public static explicit operator UTF32Character(byte byteData)
 		{
-			return new UTF32Character((new Rune(utf16Character)).Value);
+			return new UTF32Character(byteData);
+		}
+
+		/// <summary>
+		///		static
+		///		implicit
+		///		operator UTF32Character()
+		/// </summary>
+		/// <param name="character"></param>
+		/// <returns>UTF32Character</returns>
+		public static implicit operator UTF32Character(char character)
+		{
+			return new UTF32Character(character);
+		}
+
+		/// <summary>
+		/// 	static
+		/// 	explicit
+		/// 	operator UTF32Character()
+		/// </summary>
+		/// <param name="codePoint"></param>
+		/// <returns>UTF32Character</returns>
+		public static explicit operator UTF32Character(int codePoint)
+		{
+			return new UTF32Character(codePoint);
 		}
 
 		/// <summary>
@@ -171,9 +218,9 @@ namespace NativeNet
 		/// <returns>bool</returns>
 		public override bool Equals(object other)
 		{
-			if (other is UTF32Character data)
+			if (other is UTF32Character instance)
 			{
-				return (this == data);
+				return (this == instance);
 			}
 			else
 			{
