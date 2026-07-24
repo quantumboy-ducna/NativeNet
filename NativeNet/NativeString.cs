@@ -39,7 +39,7 @@ namespace NativeNet
 	///		C# class: `NativeString`.
 	/// </summary>
 	/// <typeparam name="GenericTypeOfCharacter"></typeparam>
-	public unsafe sealed class NativeString<GenericTypeOfCharacter> : IDisposable where GenericTypeOfCharacter : unmanaged,CharacterTraits<GenericTypeOfCharacter>
+	public unsafe sealed class NativeString<GenericTypeOfCharacter> : IDisposable where GenericTypeOfCharacter : unmanaged,NativeCharacterTraits<GenericTypeOfCharacter>
 	{
 		private GenericTypeOfCharacter* bufferPointer;
 		private int length;
@@ -69,10 +69,6 @@ namespace NativeNet
 			}
 			else
 			{
-				this.capacity = primitiveString.Length;
-				this.length = primitiveString.Length;
-				this.bufferPointer = (GenericTypeOfCharacter*)(NativeMemory.Alloc((uint)(sizeof(GenericTypeOfCharacter) * this.length),8));
-
 				if (typeof(GenericTypeOfCharacter) == typeof(char8_t))
 				{
 					byte[] utf8Bytes = Encoding.UTF8.GetBytes(primitiveString);
@@ -147,6 +143,44 @@ namespace NativeNet
 			this.bufferPointer = null;
 			this.length = 0;
 			this.capacity = 0;
+		}
+
+		/// <summary>
+		///		static
+		///		implicit
+		///		operator NativeString()
+		/// </summary>
+		/// <param name="instance"></param>
+		/// <returns>string</returns>
+		public static implicit operator NativeString<GenericTypeOfCharacter>(string instance)
+		{
+			if (instance is null)
+			{
+				return null;
+			}
+			else
+			{
+				return new NativeString<GenericTypeOfCharacter>(instance);
+			}
+		}
+
+		/// <summary>
+		///		static
+		///		implicit
+		///		operator string()
+		/// </summary>
+		/// <param name="instance"></param>
+		/// <returns>string</returns>
+		public static implicit operator string(NativeString<GenericTypeOfCharacter> instance)
+		{
+			if (instance is null)
+			{
+				return null;
+			}
+			else
+			{
+				return instance.ToString();
+			}
 		}
 
 		/// <summary>
@@ -288,6 +322,37 @@ namespace NativeNet
 
 		/// <summary>
 		///		dynamic
+		///		override
+		/// </summary>
+		/// <returns>string</returns>
+		/// <exception cref="NativeNetException"></exception>
+		public override string ToString()
+		{
+			if ((this.bufferPointer == null) || (this.length == 0))
+			{
+				return string.Empty;
+			}
+
+			if (typeof(GenericTypeOfCharacter) == typeof(char8_t))
+			{
+				return Encoding.UTF8.GetString((byte*)(this.bufferPointer),this.length);
+			}
+			else if (typeof(GenericTypeOfCharacter) == typeof(char16_t))
+			{
+				return new string((char*)(this.bufferPointer),0,this.length);
+			}
+			else if (typeof(GenericTypeOfCharacter) == typeof(char32_t))
+			{
+				return Encoding.UTF32.GetString((byte*)(this.bufferPointer),this.length * sizeof(char32_t));
+			}
+			else
+			{
+				throw new NativeNetException($"Unsupported character type: `{typeof(GenericTypeOfCharacter).Name}`!");
+			}
+		}
+
+		/// <summary>
+		///		dynamic
 		/// </summary>
 		/// <returns>void</returns>
 		void IDisposable.Dispose()
@@ -310,6 +375,23 @@ namespace NativeNet
 		public int getLength()
 		{
 			return this.length;
+		}
+
+		/// <summary>
+		///		dynamic
+		/// </summary>
+		/// <param name="other"></param>
+		/// <returns>bool</returns>
+		public bool contains(NativeString<GenericTypeOfCharacter> other)
+		{
+			if (other is null)
+			{
+				return false;
+			}
+			else
+			{
+				return ((new ReadOnlySpan<GenericTypeOfCharacter>(this.bufferPointer,this.length)).IndexOf(new ReadOnlySpan<GenericTypeOfCharacter>(other.bufferPointer,other.length)) >= 0);
+			}
 		}
 
 		/// <summary>
@@ -374,10 +456,10 @@ namespace NativeNet
 		/// <summary>
 		/// 	dynamic
 		/// </summary>
-		/// <param name="character"></param>
 		/// <param name="index"></param>
+		/// <param name="character"></param>
 		/// <returns>void</returns>
-		public void insert(GenericTypeOfCharacter character,int index)
+		public void insert(int index,GenericTypeOfCharacter character)
 		{
 			if ((index < 0) || (index >= this.length))
 			{
@@ -406,37 +488,39 @@ namespace NativeNet
 		/// <summary>
 		/// 	dynamic
 		/// </summary>
-		/// <param name="other"></param>
 		/// <param name="index"></param>
+		/// <param name="other"></param>
 		/// <returns>void</returns>
 		/// <exception cref="NativeNetException"></exception>
-		public void insert(NativeString<GenericTypeOfCharacter> other,int index)
+		public void insert(int index,NativeString<GenericTypeOfCharacter> other)
 		{
 			if (other is null)
 			{
 				throw new NativeNetException("Argument `other` is null!");
 			}
-			else if ((index < 0) || (index >= this.length))
+			else if ((index < 0) || (index > this.length))
 			{
 				NativeNetAuxiliary.throwOutOfBoundException(index);
 			}
 			else if (other.length > 0)
 			{
-				this.length += other.length;
+				int oldLength = this.length;
+				int newLength = oldLength + other.length;
 
-				if (this.length > this.capacity)
+				if (newLength > this.capacity)
 				{
-					this.increaseCapacity(this.length * 2);
+					this.increaseCapacity(newLength * 2);
 				}
 
-				int i = 0;
+				int elementsToShift = oldLength - index;
 
-				for (i = (this.length - 1);i > (index + other.length);i--)
+				if (elementsToShift > 0)
 				{
-					(this.bufferPointer)[i] = (this.bufferPointer)[i - other.length];
+					Buffer.MemoryCopy(this.bufferPointer + index,this.bufferPointer + index + other.length,(ulong)(sizeof(GenericTypeOfCharacter) * elementsToShift),(ulong)(sizeof(GenericTypeOfCharacter) * elementsToShift));
 				}
 
 				Unsafe.CopyBlock(this.bufferPointer + index,other.bufferPointer,(uint)(sizeof(GenericTypeOfCharacter) * other.length));
+				this.length = newLength;
 			}
 		}
 
@@ -447,7 +531,7 @@ namespace NativeNet
 		/// <returns>void</returns>
 		public void remove(int index)
 		{
-			if ((index < 0) || (index >= this.length))
+			if ((index < 0) || (index > this.length) || (this.length == 0))
 			{
 				NativeNetAuxiliary.throwOutOfBoundException(index);
 			}

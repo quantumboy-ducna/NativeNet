@@ -15,6 +15,15 @@
 	<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
 	<Title>NativeNet</Title>
 	<LangVersion>12.0</LangVersion>
+	<ErrorReport>none</ErrorReport>
+	<Copyright>Copyright©2026, Nguyễn Anh Đức (workofduc@gmail.com).</Copyright>
+	<Description>NativeNet - a native library but written in unsafe C#.</Description>
+	<RepositoryType>git</RepositoryType>
+	<PackageTags>NativeNet;nativenet;unsafe;</PackageTags>
+	<PackageLicenseFile>LICENSE</PackageLicenseFile>
+	<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+	<AnalysisLevel>latest</AnalysisLevel>
+	<PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -25,7 +34,8 @@
 	<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
 	<IsPublishable>False</IsPublishable>
 	<IsTrimmable>False</IsTrimmable>
-	<NoWarn>1701;1702;CS1570;CS1587;CS1591;CA1050;IDE1006;</NoWarn>
+	<NoWarn>1701;1702;CS1570;CS1587;CS1591;CA1050;IDE0001;IDE0003;IDE0017;IDE0047;IDE0054;IDE0090;IDE1006;</NoWarn>
+	<FileAlignment>1024</FileAlignment>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -36,8 +46,20 @@
 	<IsPublishable>False</IsPublishable>
 	<Optimize>True</Optimize>
 	<IsTrimmable>False</IsTrimmable>
-	<NoWarn>1701;1702;CS1570;CS1587;CS1591;CA1050;IDE1006;</NoWarn>
+	<NoWarn>1701;1702;CS1570;CS1587;CS1591;CA1050;IDE0001;IDE0003;IDE0017;IDE0047;IDE0054;IDE0090;IDE1006;</NoWarn>
+	<FileAlignment>1024</FileAlignment>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
 	<Compile Update="Properties\Resources.Designer.cs">

@@ -17,9 +17,15 @@
 ///		For commercial licensing inquiries, pricing, or to obtain a proprietary license agreement, please contact: workofduc@gmail.com
 /// </remarks>
 
+#pragma warning disable CS0693
+#pragma warning disable CS8500
+#pragma warning disable IDE0001
+#pragma warning disable IDE0003
+#pragma warning disable IDE0047
+#pragma warning disable IDE0054
+
 /** Inclusion(s) of the standard C# namespace(s).**/
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
+using System;
 
 
 /** Main code.**/
@@ -30,21 +36,17 @@ using System.Runtime.CompilerServices;
 namespace NativeNet
 {
 	/// <summary>
-	///		C# class: `NativeNetAuxiliary`.
+	///		C# class: `NativeNet`.
 	/// </summary>
-	public static class NativeNetAuxiliary
+	internal class NativeNet
 	{
-		/// <summary>
-		///		static
-		/// </summary>
-		/// <param name="index"></param>
-		/// <returns>void</returns>
-		/// <exception cref="Exception"></exception>
-		[DoesNotReturn]
-		[MethodImpl(MethodImplOptions.NoInlining)]
-		public static void throwOutOfBoundException(int index)
+		/*public static void Main(string[] arguments)
 		{
-			throw new NativeNetException("Argument `index` is out of bound: `" + Convert.ToString(index) + "`.");
-		}
+			NativeString<char32_t> nativeString = "abcdef";
+			nativeString.append("ghijk");
+			nativeString.insert(0,"00000");
+			Console.WriteLine(nativeString);
+			Console.WriteLine(nativeString.contains("abcdef"));
+		}*/
 	};
 };

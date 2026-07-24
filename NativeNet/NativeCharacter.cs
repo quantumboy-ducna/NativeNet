@@ -33,9 +33,9 @@ using System.Text;
 namespace NativeNet
 {
 	/// <summary>
-	///		C# interface: `CharacterTraits`.
+	///		C# interface: `NativeCharacterTraits`.
 	/// </summary>
-	public interface CharacterTraits<GenericTypeOfCharacter> where GenericTypeOfCharacter : CharacterTraits<GenericTypeOfCharacter>
+	public interface NativeCharacterTraits<GenericTypeOfCharacter> where GenericTypeOfCharacter : NativeCharacterTraits<GenericTypeOfCharacter>
 	{
 		/// <summary>
 		///		static
@@ -56,14 +56,64 @@ namespace NativeNet
 		/// <param name="second"></param>
 		/// <returns>bool</returns>
 		public abstract static bool operator!=(GenericTypeOfCharacter first,GenericTypeOfCharacter second);
+
+		/// <summary>
+		///		static
+		///		abstract
+		///		operator&lt;
+		/// </summary>
+		/// <param name="first"></param>
+		/// <param name="second"></param>
+		/// <returns>bool</returns>
+		public abstract static bool operator<(GenericTypeOfCharacter first,GenericTypeOfCharacter second);
+
+		/// <summary>
+		///		static
+		///		abstract
+		///		operator&gt;
+		/// </summary>
+		/// <param name="first"></param>
+		/// <param name="second"></param>
+		/// <returns>bool</returns>
+		public abstract static bool operator>(GenericTypeOfCharacter first,GenericTypeOfCharacter second);
+
+		/// <summary>
+		///		static
+		///		abstract
+		///		operator&lt;=
+		/// </summary>
+		/// <param name="first"></param>
+		/// <param name="second"></param>
+		/// <returns>bool</returns>
+		public abstract static bool operator<=(GenericTypeOfCharacter first,GenericTypeOfCharacter second);
+
+		/// <summary>
+		///		static
+		///		abstract
+		///		operator&gt;=
+		/// </summary>
+		/// <param name="first"></param>
+		/// <param name="second"></param>
+		/// <returns>bool</returns>
+		public abstract static bool operator>=(GenericTypeOfCharacter first,GenericTypeOfCharacter second);
+
+		/// <summary>
+		///		static
+		///		abstract
+		///		explicit
+		///		operator uint()
+		/// </summary>
+		/// <param name="instance"></param>
+		/// <returns>int</returns>
+		public abstract static explicit operator uint(GenericTypeOfCharacter instance);
 	};
 
 	/// <summary>
 	///		C# structure: `UTF32Character`.
 	/// </summary>
-	public readonly struct UTF32Character : CharacterTraits<UTF32Character>
+	public readonly struct UTF32Character : NativeCharacterTraits<UTF32Character>
 	{
-		private readonly int composedData;
+		private readonly uint composedData;
 
 
 		/// <summary>
@@ -72,7 +122,7 @@ namespace NativeNet
 		/// <param name="utf8CharacterData"></param>
 		public UTF32Character(byte utf8CharacterData)
 		{
-			this.composedData = (new Rune(utf8CharacterData)).Value;
+			this.composedData = (uint)((new Rune(utf8CharacterData)).Value);
 		}
 
 		/// <summary>
@@ -81,14 +131,14 @@ namespace NativeNet
 		/// <param name="utf16CharacterData"></param>
 		public UTF32Character(char utf16CharacterData)
 		{
-			this.composedData = (new Rune(utf16CharacterData)).Value;
+			this.composedData = (uint)((new Rune(utf16CharacterData)).Value);
 		}
 
 		/// <summary>
 		///		Constructor of `UTF32Character`.
 		/// </summary>
 		/// <param name="codePoint"></param>
-		public UTF32Character(int codePoint)
+		public UTF32Character(uint codePoint)
 		{
 			this.composedData = codePoint;
 		}
@@ -133,9 +183,21 @@ namespace NativeNet
 		/// </summary>
 		/// <param name="codePoint"></param>
 		/// <returns>UTF32Character</returns>
-		public static explicit operator UTF32Character(int codePoint)
+		public static explicit operator UTF32Character(uint codePoint)
 		{
 			return new UTF32Character(codePoint);
+		}
+
+		/// <summary>
+		///		static
+		///		explicit
+		///		operator int()
+		/// </summary>
+		/// <param name="instance"></param>
+		/// <returns>int</returns>
+		public static explicit operator uint(UTF32Character instance)
+		{
+			return instance.composedData;
 		}
 
 		/// <summary>
@@ -245,7 +307,7 @@ namespace NativeNet
 		/// <returns>string</returns>
 		public override string ToString()
 		{
-			return char.ConvertFromUtf32(this.composedData);
+			return char.ConvertFromUtf32((int)(this.composedData));
 		}
 	};
 };
