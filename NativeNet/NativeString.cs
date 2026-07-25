@@ -36,7 +36,7 @@ using System.Text;
 namespace NativeNet
 {
 	/// <summary>
-	///		C# class: `NativeString`.
+	///		C# generic class: `NativeString`.
 	/// </summary>
 	/// <typeparam name="GenericTypeOfCharacter"></typeparam>
 	public unsafe sealed class NativeString<GenericTypeOfCharacter> : IDisposable where GenericTypeOfCharacter : unmanaged,NativeCharacterTraits<GenericTypeOfCharacter>
@@ -446,7 +446,7 @@ namespace NativeNet
 
 				if (this.length > this.capacity)
 				{
-					this.increaseCapacity(this.length * 2);
+					this.reserveCapacity(this.length * 2);
 				}
 
 				Unsafe.CopyBlock(this.bufferPointer + oldLength,other.bufferPointer,(uint)(sizeof(GenericTypeOfCharacter) * other.length));
@@ -509,7 +509,7 @@ namespace NativeNet
 
 				if (newLength > this.capacity)
 				{
-					this.increaseCapacity(newLength * 2);
+					this.reserveCapacity(newLength * 2);
 				}
 
 				int elementsToShift = oldLength - index;
@@ -587,12 +587,11 @@ namespace NativeNet
 		/// <param name="newCapacity"></param>
 		/// <returns>void</returns>
 		/// <exception cref="NativeNetException"></exception>
-		private void increaseCapacity(int newCapacity)
+		private void reserveCapacity(int newCapacity)
 		{
 			try
 			{
-				this.capacity = newCapacity;
-				void* reallocatedMemoryPointer = NativeMemory.Realloc(this.bufferPointer,(nuint)(sizeof(GenericTypeOfCharacter) * this.capacity));
+				void* reallocatedMemoryPointer = NativeMemory.Realloc(this.bufferPointer,(nuint)(sizeof(GenericTypeOfCharacter) * newCapacity));
 
 				if (reallocatedMemoryPointer == null)
 				{
@@ -601,6 +600,7 @@ namespace NativeNet
 				else
 				{
 					this.bufferPointer = (GenericTypeOfCharacter*)reallocatedMemoryPointer;
+					this.capacity = newCapacity;
 				}
 			}
 			catch (OutOfMemoryException exception)

@@ -33,7 +33,7 @@ using System.Text;
 namespace NativeNet
 {
 	/// <summary>
-	///		C# interface: `NativeCharacterTraits`.
+	///		C# generic interface: `NativeCharacterTraits`.
 	/// </summary>
 	public interface NativeCharacterTraits<GenericTypeOfCharacter> where GenericTypeOfCharacter : NativeCharacterTraits<GenericTypeOfCharacter>
 	{

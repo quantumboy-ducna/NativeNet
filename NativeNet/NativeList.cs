@@ -36,7 +36,7 @@ using System.Runtime.InteropServices;
 namespace NativeNet
 {
 	/// <summary>
-	///		C# class: `NativeList`.
+	///		C# generic class: `NativeList`.
 	/// </summary>
 	/// <typeparam name="GenericType"></typeparam>
 	public unsafe sealed class NativeList<GenericType> : IDisposable
@@ -144,6 +144,16 @@ namespace NativeNet
 					(this.bufferPointer)[index] = value;
 				}
 			}
+		}
+
+		/// <summary>
+		///		dynamic
+		/// </summary>
+		/// <returns>void</returns>
+		void IDisposable.Dispose()
+		{
+			GC.SuppressFinalize(this);
+			this.clear();
 		}
 
 		/// <summary>
@@ -298,10 +308,20 @@ namespace NativeNet
 		///		dynamic
 		/// </summary>
 		/// <returns>void</returns>
-		void IDisposable.Dispose()
+		public void clear()
 		{
-			GC.SuppressFinalize(this);
-			NativeMemory.Free(this.bufferPointer);
+			if ((this.bufferPointer != null) && (this.capacity > 0))
+			{
+				int i = 0;
+
+				for (i = 0;i < this.capacity;i++)
+				{
+					(this.bufferPointer)[i] = default;
+				}
+
+				this.size = 0;
+				this.capacity = 0;
+			}
 		}
 
 		/// <summary>
