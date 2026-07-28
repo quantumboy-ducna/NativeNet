@@ -40,7 +40,7 @@ namespace NativeNet
 	/// </summary>
 	internal class NativeNet
 	{
-		/*public static void Main(string[] arguments)
+		/*public static void Main()
 		{
 			NativeString<char32_t> nativeString = "abcdef";
 			nativeString.append("ghijk");

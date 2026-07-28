@@ -17,11 +17,6 @@
 ///		For commercial licensing inquiries, pricing, or to obtain a proprietary license agreement, please contact: workofduc@gmail.com
 /// </remarks>
 
-#pragma warning disable CS8500
-#pragma warning disable IDE0001
-#pragma warning disable IDE0003
-#pragma warning disable IDE0047
-
 /** Inclusion(s) of the standard C# namespace(s).**/
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;

@@ -17,10 +17,7 @@
 ///		For commercial licensing inquiries, pricing, or to obtain a proprietary license agreement, please contact: workofduc@gmail.com
 /// </remarks>
 
-#pragma warning disable IDE0003
-#pragma warning disable IDE0017
-#pragma warning disable IDE0047
-#pragma warning disable IDE0090
+#pragma warning disable CA1821S
 
 /** Inclusion(s) of the standard C# namespace(s).**/
 using System;
@@ -33,118 +30,118 @@ using System;
 /// </summary>
 namespace NativeNet
 {
-    /// <summary>
-    ///     C# class: `NativeNetException`.
-    /// </summary>
-    public sealed class NativeNetException : Exception
-    {
-        /// <summary>
-        ///     Constructor of `NativeNetException`.
-        /// </summary>
-        /// <param name="message"></param>
-        public NativeNetException(string message) : base(message)
-        {
-            
-        }
+	/// <summary>
+	///     C# class: `NativeNetException`.
+	/// </summary>
+	public sealed class NativeNetException : Exception
+	{
+		/// <summary>
+		///     Constructor of `NativeNetException`.
+		/// </summary>
+		/// <param name="message"></param>
+		public NativeNetException(string message) : base(message)
+		{
+			
+		}
 
-        /// <summary>
-        ///     Copy constructor of `NativeNetException`.
-        /// </summary>
-        /// <param name="other"></param> 
-        public NativeNetException(NativeNetException other) : base((other is null) ? "Exception thrown!" : other.Message)
-        {
-            
-        }
+		/// <summary>
+		///     Copy constructor of `NativeNetException`.
+		/// </summary>
+		/// <param name="other"></param> 
+		public NativeNetException(NativeNetException other) : base((other is null) ? "Exception thrown!" : other.Message)
+		{
+			
+		}
 
-        /// <summary>
-        ///     Destructor of `NativeNetException`.
-        /// </summary>
-        ~NativeNetException()
-        {
-            
-        }
+		/// <summary>
+		///     Destructor of `NativeNetException`.
+		/// </summary>
+		~NativeNetException()
+		{
+			
+		}
 
-        /// <summary>
-        ///     static
-        ///     operator==
-        /// </summary>
-        /// <param name="first"></param>
-        /// <param name="second"></param>
-        /// <returns>bool</returns>
-        public static bool operator==(NativeNetException first,NativeNetException second)
-        {
-            if (ReferenceEquals(first,second) == true)
-            {
-                return true;
-            }
-            else if (((first is null) && (second is not null)) || ((first is not null) && (second is null)))
-            {
-                return false;
-            }
-            else
-            {
-                return (first.Message == second.Message);
-            }
-        }
+		/// <summary>
+		///     static
+		///     operator==
+		/// </summary>
+		/// <param name="first"></param>
+		/// <param name="second"></param>
+		/// <returns>bool</returns>
+		public static bool operator==(NativeNetException first,NativeNetException second)
+		{
+			if (ReferenceEquals(first,second) == true)
+			{
+				return true;
+			}
+			else if (((first is null) && (second is not null)) || ((first is not null) && (second is null)))
+			{
+				return false;
+			}
+			else
+			{
+				return (first.Message == second.Message);
+			}
+		}
 
-        /// <summary>
-        ///     static
-        ///     operator!=
-        /// </summary>
-        /// <param name="first"></param>
-        /// <param name="second"></param>
-        /// <returns>bool</returns>
-        public static bool operator!=(NativeNetException first, NativeNetException second)
-        {
-            if (ReferenceEquals(first, second) == true)
-            {
-                return false;
-            }
-            else if (((first is null) && (second is not null)) || ((first is not null) && (second is null)))
-            {
-                return true;
-            }
-            else
-            {
-                return (first.Message != second.Message);
-            }
-        }
+		/// <summary>
+		///     static
+		///     operator!=
+		/// </summary>
+		/// <param name="first"></param>
+		/// <param name="second"></param>
+		/// <returns>bool</returns>
+		public static bool operator!=(NativeNetException first, NativeNetException second)
+		{
+			if (ReferenceEquals(first, second) == true)
+			{
+				return false;
+			}
+			else if (((first is null) && (second is not null)) || ((first is not null) && (second is null)))
+			{
+				return true;
+			}
+			else
+			{
+				return (first.Message != second.Message);
+			}
+		}
 
-        /// <summary>
+		/// <summary>
 		///		dynamic
 		///		override
 		/// </summary>
 		/// <param name="other"></param>
 		/// <returns>bool</returns>
 		public override bool Equals(object other)
-        {
-            if (other is NativeNetException instance)
-            {
-                return (this == instance);
-            }
-            else
-            {
-                return false;
-            }
-        }
+		{
+			if (other is NativeNetException instance)
+			{
+				return (this == instance);
+			}
+			else
+			{
+				return false;
+			}
+		}
 
-        /// <summary>
-        ///		dynamic
-        ///		override
-        /// </summary>
-        /// <returns>int</returns>
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
+		/// <summary>
+		///		dynamic
+		///		override
+		/// </summary>
+		/// <returns>int</returns>
+		public override int GetHashCode()
+		{
+			return base.GetHashCode();
+		}
 
-        /// <summary>
-        ///     dynamic
-        /// </summary>
-        /// <returns>string</returns>
-        public string getMessage()
-        {
-            return this.Message;
-        }
-    };
+		/// <summary>
+		///     dynamic
+		/// </summary>
+		/// <returns>string</returns>
+		public string getMessage()
+		{
+			return this.Message;
+		}
+	};
 };

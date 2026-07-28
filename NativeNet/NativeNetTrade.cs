@@ -23,12 +23,12 @@
 /// <summary>
 ///		C# type name alias: `char8_t`.
 /// </summary>
-global using char8_t = byte;
+global using char8_t = NativeNet.UTF8Character;
 
 /// <summary>
 ///		C# type name alias: `char16_t`.
 /// </summary>
-global using char16_t = char;
+global using char16_t = NativeNet.UTF16Character;
 
 /// <summary>
 ///		C# type name alias: `char32_t`.

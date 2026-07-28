@@ -17,13 +17,6 @@
 ///		For commercial licensing inquiries, pricing, or to obtain a proprietary license agreement, please contact: workofduc@gmail.com
 /// </remarks>
 
-#pragma warning disable CS0693
-#pragma warning disable CS8500
-#pragma warning disable IDE0001
-#pragma warning disable IDE0003
-#pragma warning disable IDE0047
-#pragma warning disable IDE0054
-
 /** Inclusion(s) of the standard C# namespace(s).**/
 using System.Runtime.InteropServices;
 
@@ -39,7 +32,7 @@ namespace NativeNet
 	///		C# generic class: `NativeList`.
 	/// </summary>
 	/// <typeparam name="GenericType"></typeparam>
-	public unsafe sealed class NativeList<GenericType> : IDisposable
+	public unsafe sealed class NativeList<GenericType> : IDisposable where GenericType : IComparable<GenericType>
 	{
 		private int size;
 		private int capacity;
@@ -216,11 +209,10 @@ namespace NativeNet
 		/// <summary>
 		///		dynamic
 		/// </summary>
-		/// <typeparam name="GenericType"></typeparam>
 		/// <param name="element"></param>
 		/// <returns>void</returns>
 		/// <exception cref="NativeNetException"></exception>
-		public void remove<GenericType>(GenericType element) where GenericType : IComparable<GenericType>
+		public void remove(GenericType element)
 		{
 			int i = 0;
 
@@ -263,11 +255,10 @@ namespace NativeNet
 		/// <summary>
 		///		dynamic
 		/// </summary>
-		/// <typeparam name="GenericType"></typeparam>
 		/// <param name="element"></param>
 		/// <returns>int</returns>
 		/// <exception cref="NativeNetException"></exception>
-		public int getFirstIndexOfElement<GenericType>(GenericType element) where GenericType : IComparable<GenericType>
+		public int getFirstIndexOfElement(GenericType element)
 		{
 			int i = 0;
 
@@ -285,11 +276,10 @@ namespace NativeNet
 		/// <summary>
 		///		dynamic
 		/// </summary>
-		/// <typeparam name="GenericType"></typeparam>
 		/// <param name="element"></param>
 		/// <returns>int</returns>
 		/// <exception cref="NativeNetException"></exception>
-		public int getLastIndexOfElement<GenericType>(GenericType element) where GenericType : IComparable<GenericType>
+		public int getLastIndexOfElement(GenericType element)
 		{
 			int i = this.size - 1;
 

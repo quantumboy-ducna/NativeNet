@@ -17,10 +17,6 @@
 ///		For commercial licensing inquiries, pricing, or to obtain a proprietary license agreement, please contact: workofduc@gmail.com
 /// </remarks>
 
-#pragma warning disable IDE0001
-#pragma warning disable IDE0003
-#pragma warning disable IDE0047
-
 /** Inclusion(s) of the standard C# namespace(s).**/
 using System.Text;
 
@@ -37,6 +33,16 @@ namespace NativeNet
 	/// </summary>
 	public interface NativeCharacterTraits<GenericTypeOfCharacter> where GenericTypeOfCharacter : NativeCharacterTraits<GenericTypeOfCharacter>
 	{
+		/// <summary>
+		///		static
+		///		abstract
+		///		explicit
+		///		operator uint()
+		/// </summary>
+		/// <param name="instance"></param>
+		/// <returns>int</returns>
+		public abstract static explicit operator uint(GenericTypeOfCharacter instance);
+
 		/// <summary>
 		///		static
 		///		abstract
@@ -96,16 +102,394 @@ namespace NativeNet
 		/// <param name="second"></param>
 		/// <returns>bool</returns>
 		public abstract static bool operator>=(GenericTypeOfCharacter first,GenericTypeOfCharacter second);
+	};
+
+	/// <summary>
+	///		C# structure: `UTF8Character`.
+	/// </summary>
+	public readonly struct UTF8Character : NativeCharacterTraits<UTF8Character>
+	{
+		private readonly byte composedData;
+
+
+		/// <summary>
+		/// 	Constructor of `UTF8Character`.
+		/// </summary>
+		/// <param name="utf8CharacterData"></param>
+		public UTF8Character(byte utf8CharacterData)
+		{
+			this.composedData = utf8CharacterData;
+		}
+
+		/// <summary>
+		/// 	Constructor of `UTF8Character`.
+		/// </summary>
+		/// <param name="utf16CharacterData"></param>
+		public UTF8Character(char utf16CharacterData)
+		{
+			this.composedData = (byte)((new Rune(utf16CharacterData)).Value);
+		}
+
+		/// <summary>
+		///		Copy constructor of `UTF8Character`.
+		/// </summary>
+		/// <param name="other"></param>
+		public UTF8Character(UTF8Character other)
+		{
+			this.composedData = other.composedData;
+		}
 
 		/// <summary>
 		///		static
-		///		abstract
+		///		implicit
+		///		operator UTF8Character()
+		/// </summary>
+		/// <param name="instance"></param>
+		/// <returns>UTF8Character</returns>
+		public static implicit operator UTF8Character(byte instance)
+		{
+			return new UTF8Character(instance);
+		}
+
+		/// <summary>
+		///		static
+		///		explicit
+		///		operator UTF8Character()
+		/// </summary>
+		/// <param name="instance"></param>
+		/// <returns>UTF8Character</returns>
+		public static explicit operator UTF8Character(char instance)
+		{
+			return new UTF8Character(instance);
+		}
+
+		/// <summary>
+		///		static
+		///		implicit
+		///		operator byte()
+		/// </summary>
+		/// <param name="instance"></param>
+		/// <returns>byte</returns>
+		public static implicit operator byte(UTF8Character instance)
+		{
+			return instance.composedData;
+		}
+
+		/// <summary>
+		///		static
 		///		explicit
 		///		operator uint()
 		/// </summary>
 		/// <param name="instance"></param>
+		/// <returns>uint</returns>
+		public static explicit operator uint(UTF8Character instance)
+		{
+			return instance.composedData;
+		}
+
+		/// <summary>
+		///		static
+		///		operator==
+		/// </summary>
+		/// <param name="first"></param>
+		/// <param name="second"></param>
+		/// <returns>bool</returns>
+		public static bool operator==(UTF8Character first,UTF8Character second)
+		{
+			return (first.composedData == second.composedData);
+		}
+
+		/// <summary>
+		///		static
+		///		operator==
+		/// </summary>
+		/// <param name="first"></param>
+		/// <param name="second"></param>
+		/// <returns>bool</returns>
+		public static bool operator!=(UTF8Character first,UTF8Character second)
+		{
+			return (first.composedData != second.composedData);
+		}
+
+		/// <summary>
+		///		static
+		///		operator&lt;
+		/// </summary>
+		/// <param name="first"></param>
+		/// <param name="second"></param>
+		/// <returns>bool</returns>
+		public static bool operator<(UTF8Character first,UTF8Character second)
+		{
+			return (first.composedData < second.composedData);
+		}
+
+		/// <summary>
+		///		static
+		///		operator&gt;
+		/// </summary>
+		/// <param name="first"></param>
+		/// <param name="second"></param>
+		/// <returns></returns>
+		public static bool operator>(UTF8Character first,UTF8Character second)
+		{
+			return (first.composedData > second.composedData);
+		}
+
+		/// <summary>
+		///		static
+		///		operator&lt;=
+		/// </summary>
+		/// <param name="first"></param>
+		/// <param name="second"></param>
+		/// <returns></returns>
+		public static bool operator<=(UTF8Character first,UTF8Character second)
+		{
+			return (first.composedData <= second.composedData);
+		}
+
+		/// <summary>
+		///		static
+		///		operator&gt;=
+		/// </summary>
+		/// <param name="first"></param>
+		/// <param name="second"></param>
+		/// <returns></returns>
+		public static bool operator>=(UTF8Character first,UTF8Character second)
+		{
+			return (first.composedData >= second.composedData);
+		}
+
+		/// <summary>
+		///		dynamic
+		///		override
+		/// </summary>
+		/// <param name="other"></param>
+		/// <returns>bool</returns>
+		public override bool Equals(object other)
+		{
+			if (other is UTF8Character instance)
+			{
+				return (this == instance);
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		/// <summary>
+		///		dynamic
+		///		override
+		/// </summary>
 		/// <returns>int</returns>
-		public abstract static explicit operator uint(GenericTypeOfCharacter instance);
+		public override int GetHashCode()
+		{
+			return (this.composedData).GetHashCode();
+		}
+
+		/// <summary>
+		///		dynamic
+		///		override
+		/// </summary>
+		/// <returns>string</returns>
+		public override string ToString()
+		{
+			return Convert.ToString(this.composedData);
+		}
+	};
+
+	/// <summary>
+	///		C# structure: `UTF16Character`.
+	/// </summary>
+	public readonly struct UTF16Character : NativeCharacterTraits<UTF16Character>
+	{
+		private readonly char composedData;
+
+
+		/// <summary>
+		/// 	Constructor of `UTF16Character`.
+		/// </summary>
+		/// <param name="utf8CharacterData"></param>
+		public UTF16Character(byte utf8CharacterData)
+		{
+			this.composedData = (char)utf8CharacterData;
+		}
+
+		/// <summary>
+		/// 	Constructor of `UTF16Character`.
+		/// </summary>
+		/// <param name="utf16CharacterData"></param>
+		public UTF16Character(char utf16CharacterData)
+		{
+			this.composedData = utf16CharacterData;
+		}
+
+		/// <summary>
+		///		Copy constructor of `UTF16Character`.
+		/// </summary>
+		/// <param name="other"></param>
+		public UTF16Character(UTF16Character other)
+		{
+			this.composedData = other.composedData;
+		}
+
+		/// <summary>
+		///		static
+		///		explicit
+		///		operator UTF16Character()
+		/// </summary>
+		/// <param name="instance"></param>
+		/// <returns>UTF16Character</returns>
+		public static explicit operator UTF16Character(byte instance)
+		{
+			return new UTF16Character(instance);
+		}
+
+		/// <summary>
+		///		static
+		///		implicit
+		///		operator UTF16Character()
+		/// </summary>
+		/// <param name="instance"></param>
+		/// <returns>UTF16Character</returns>
+		public static implicit operator UTF16Character(char instance)
+		{
+			return new UTF16Character(instance);
+		}
+
+		/// <summary>
+		///		static
+		///		implicit
+		///		operator char()
+		/// </summary>
+		/// <param name="instance"></param>
+		/// <returns>char</returns>
+		public static implicit operator char(UTF16Character instance)
+		{
+			return instance.composedData;
+		}
+
+		/// <summary>
+		///		static
+		///		explicit
+		///		operator uint()
+		/// </summary>
+		/// <param name="instance"></param>
+		/// <returns>uint</returns>
+		public static explicit operator uint(UTF16Character instance)
+		{
+			return instance.composedData;
+		}
+
+		/// <summary>
+		///		static
+		///		operator==
+		/// </summary>
+		/// <param name="first"></param>
+		/// <param name="second"></param>
+		/// <returns>bool</returns>
+		public static bool operator==(UTF16Character first,UTF16Character second)
+		{
+			return (first.composedData == second.composedData);
+		}
+
+		/// <summary>
+		///		static
+		///		operator==
+		/// </summary>
+		/// <param name="first"></param>
+		/// <param name="second"></param>
+		/// <returns>bool</returns>
+		public static bool operator!=(UTF16Character first,UTF16Character second)
+		{
+			return (first.composedData != second.composedData);
+		}
+
+		/// <summary>
+		///		static
+		///		operator&lt;
+		/// </summary>
+		/// <param name="first"></param>
+		/// <param name="second"></param>
+		/// <returns>bool</returns>
+		public static bool operator<(UTF16Character first,UTF16Character second)
+		{
+			return (first.composedData < second.composedData);
+		}
+
+		/// <summary>
+		///		static
+		///		operator&gt;
+		/// </summary>
+		/// <param name="first"></param>
+		/// <param name="second"></param>
+		/// <returns></returns>
+		public static bool operator>(UTF16Character first,UTF16Character second)
+		{
+			return (first.composedData > second.composedData);
+		}
+
+		/// <summary>
+		///		static
+		///		operator&lt;=
+		/// </summary>
+		/// <param name="first"></param>
+		/// <param name="second"></param>
+		/// <returns></returns>
+		public static bool operator<=(UTF16Character first,UTF16Character second)
+		{
+			return (first.composedData <= second.composedData);
+		}
+
+		/// <summary>
+		///		static
+		///		operator&gt;=
+		/// </summary>
+		/// <param name="first"></param>
+		/// <param name="second"></param>
+		/// <returns></returns>
+		public static bool operator>=(UTF16Character first,UTF16Character second)
+		{
+			return (first.composedData >= second.composedData);
+		}
+
+		/// <summary>
+		///		dynamic
+		///		override
+		/// </summary>
+		/// <param name="other"></param>
+		/// <returns>bool</returns>
+		public override bool Equals(object other)
+		{
+			if (other is UTF16Character instance)
+			{
+				return (this == instance);
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		/// <summary>
+		///		dynamic
+		///		override
+		/// </summary>
+		/// <returns>int</returns>
+		public override int GetHashCode()
+		{
+			return (this.composedData).GetHashCode();
+		}
+
+		/// <summary>
+		///		dynamic
+		///		override
+		/// </summary>
+		/// <returns>string</returns>
+		public override string ToString()
+		{
+			return Convert.ToString(this.composedData);
+		}
 	};
 
 	/// <summary>

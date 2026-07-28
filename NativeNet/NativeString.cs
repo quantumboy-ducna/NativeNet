@@ -17,11 +17,6 @@
 ///		For commercial licensing inquiries,pricing,or to obtain a proprietary license agreement,please contact: workofduc@gmail.com
 /// </remarks>
 
-#pragma warning disable IDE0003
-#pragma warning disable IDE0017
-#pragma warning disable IDE0047
-#pragma warning disable IDE0090
-
 /** Inclusion(s) of the standard C# namespace(s).**/
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -47,6 +42,18 @@ namespace NativeNet
 
 
 		/// <summary>
+		///		Static constructor of `NativeString`.
+		/// </summary>
+		/// <exception cref="NativeNetException"></exception>
+		static NativeString()
+		{
+			if ((typeof(GenericTypeOfCharacter) != typeof(char8_t)) && (typeof(GenericTypeOfCharacter) != typeof(char16_t)) && (typeof(GenericTypeOfCharacter) != typeof(char32_t)))
+			{
+				throw new NativeNetException("Can't instantiate an instance of `NativeString` by the constructor of `NativeString` from an invalid generic type argument: `" + typeof(GenericTypeOfCharacter).Name + "`!");
+			}
+		}
+
+		/// <summary>
 		///		Constructor of `NativeString`.
 		/// </summary>
 		public NativeString()
@@ -54,6 +61,61 @@ namespace NativeNet
 			this.bufferPointer = null;
 			this.length = 0;
 			this.capacity = 0;
+		}
+
+		/// <summary>
+		///		Constructor of `NativeString`.
+		/// </summary>
+		/// <param name="byteSpan"></param>
+		/// <exception cref="NativeNetException"></exception>
+		public NativeString(ReadOnlySpan<byte> byteSpan)
+		{
+			if (typeof(GenericTypeOfCharacter) == typeof(char8_t))
+			{
+				this.length = byteSpan.Length;
+				this.capacity = this.length;
+				uint byteCount = (uint)this.length;
+				this.bufferPointer = (GenericTypeOfCharacter*)(NativeMemory.Alloc(byteCount));
+
+				fixed (byte* bytePointer = byteSpan)
+				{
+					Unsafe.CopyBlock(this.bufferPointer,bytePointer,byteCount);
+				}
+			}
+			else if (typeof(GenericTypeOfCharacter) == typeof(char16_t))
+			{
+				char[] utf16Bytes = new char[Encoding.UTF8.GetCharCount(byteSpan)];
+				Encoding.UTF8.GetChars(byteSpan,utf16Bytes);
+				this.length = byteSpan.Length;
+				this.capacity = this.length;
+				uint byteCount = (uint)(sizeof(GenericTypeOfCharacter) * this.length);
+				this.bufferPointer = (GenericTypeOfCharacter*)(NativeMemory.Alloc(byteCount));
+
+				fixed (char* characterPointer = utf16Bytes)
+				{
+					Unsafe.CopyBlock(this.bufferPointer,characterPointer,byteCount);
+				}
+			}
+			else if (typeof(GenericTypeOfCharacter) == typeof(char32_t))
+			{
+				Span<char> characterSpan = stackalloc char[Encoding.UTF8.GetCharCount(byteSpan)];
+				Encoding.UTF8.GetChars(byteSpan,characterSpan);
+				byte[] utf32Bytes = new byte[Encoding.UTF32.GetByteCount(characterSpan)];
+				Encoding.UTF32.GetBytes(characterSpan,utf32Bytes);
+				this.length = utf32Bytes.Length / 4;
+				this.capacity = this.length;
+				uint byteCount = (uint)(sizeof(GenericTypeOfCharacter) * this.length);
+				this.bufferPointer = (GenericTypeOfCharacter*)(NativeMemory.Alloc(byteCount));
+
+				fixed (byte* bytePointer = utf32Bytes)
+				{
+					Unsafe.CopyBlock(this.bufferPointer,bytePointer,byteCount);
+				}
+			}
+			else
+			{
+				throw new NativeNetException("Can't instantiate an instance of `NativeString` by the constructor of `NativeString` from an invalid generic type argument: `" + typeof(GenericTypeOfCharacter).Name + "`!");
+			}
 		}
 
 		/// <summary>
@@ -143,6 +205,18 @@ namespace NativeNet
 			this.bufferPointer = null;
 			this.length = 0;
 			this.capacity = 0;
+		}
+
+		/// <summary>
+		///		static
+		///		implicit
+		///		operator NativeString()
+		/// </summary>
+		/// <param name="instance"></param>
+		/// <returns>string</returns>
+		public static implicit operator NativeString<GenericTypeOfCharacter>(ReadOnlySpan<byte> instance)
+		{
+			return new NativeString<GenericTypeOfCharacter>(instance);
 		}
 
 		/// <summary>
@@ -357,6 +431,8 @@ namespace NativeNet
 		/// <returns>void</returns>
 		void IDisposable.Dispose()
 		{
+			GC.SuppressFinalize(this);
+
 			if (this.bufferPointer != null)
 			{
 				NativeMemory.Free(this.bufferPointer);
@@ -365,7 +441,6 @@ namespace NativeNet
 
 			this.length = 0;
 			this.capacity = 0;
-			GC.SuppressFinalize(this);
 		}
 
 		/// <summary>
