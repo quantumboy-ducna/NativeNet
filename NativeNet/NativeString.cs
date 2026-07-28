@@ -37,8 +37,8 @@ namespace NativeNet
 	public unsafe sealed class NativeString<GenericTypeOfCharacter> : IDisposable where GenericTypeOfCharacter : unmanaged,NativeCharacterTraits<GenericTypeOfCharacter>
 	{
 		private GenericTypeOfCharacter* bufferPointer;
-		private int length;
-		private int capacity;
+		private uint length;
+		private uint capacity;
 
 
 		/// <summary>
@@ -80,7 +80,7 @@ namespace NativeNet
 			{
 				if (typeof(GenericTypeOfCharacter) == typeof(char8_t))
 				{
-					this.length = byteSpan.Length;
+					this.length = (uint)(byteSpan.Length);
 					this.capacity = this.length;
 					uint byteCount = (uint)this.length;
 					this.bufferPointer = (GenericTypeOfCharacter*)(NativeMemory.Alloc(byteCount));
@@ -94,7 +94,7 @@ namespace NativeNet
 				{
 					char[] utf16Bytes = new char[Encoding.UTF8.GetCharCount(byteSpan)];
 					Encoding.UTF8.GetChars(byteSpan,utf16Bytes);
-					this.length = byteSpan.Length;
+					this.length = (uint)(byteSpan.Length);
 					this.capacity = this.length;
 					uint byteCount = (uint)(sizeof(GenericTypeOfCharacter) * this.length);
 					this.bufferPointer = (GenericTypeOfCharacter*)(NativeMemory.Alloc(byteCount));
@@ -110,7 +110,7 @@ namespace NativeNet
 					Encoding.UTF8.GetChars(byteSpan,characterSpan);
 					byte[] utf32Bytes = new byte[Encoding.UTF32.GetByteCount(characterSpan)];
 					Encoding.UTF32.GetBytes(characterSpan,utf32Bytes);
-					this.length = utf32Bytes.Length / 4;
+					this.length = (uint)(utf32Bytes.Length / 4);
 					this.capacity = this.length;
 					uint byteCount = (uint)(sizeof(GenericTypeOfCharacter) * this.length);
 					this.bufferPointer = (GenericTypeOfCharacter*)(NativeMemory.Alloc(byteCount));
@@ -151,7 +151,7 @@ namespace NativeNet
 					if (typeof(GenericTypeOfCharacter) == typeof(char8_t))
 					{
 						byte[] utf8Bytes = Encoding.UTF8.GetBytes(primitiveString);
-						this.length = utf8Bytes.Length;
+						this.length = (uint)(utf8Bytes.Length);
 						this.capacity = this.length;
 						uint byteCount = (uint)this.length;
 						this.bufferPointer = (GenericTypeOfCharacter*)(NativeMemory.Alloc(byteCount));
@@ -163,7 +163,7 @@ namespace NativeNet
 					}
 					else if (typeof(GenericTypeOfCharacter) == typeof(char16_t))
 					{
-						this.length = primitiveString.Length;
+						this.length = (uint)(primitiveString.Length);
 						this.capacity = this.length;
 						uint byteCount = (uint)(sizeof(GenericTypeOfCharacter) * this.length);
 						this.bufferPointer = (GenericTypeOfCharacter*)(NativeMemory.Alloc(byteCount));
@@ -176,7 +176,7 @@ namespace NativeNet
 					else if (typeof(GenericTypeOfCharacter) == typeof(char32_t))
 					{
 						byte[] utf32Bytes = Encoding.UTF32.GetBytes(primitiveString);
-						this.length = utf32Bytes.Length / 4;
+						this.length = (uint)(utf32Bytes.Length / 4);
 						this.capacity = this.length;
 						uint byteCount = (uint)(sizeof(GenericTypeOfCharacter) * this.length);
 						this.bufferPointer = (GenericTypeOfCharacter*)(NativeMemory.Alloc(byteCount));
@@ -219,7 +219,7 @@ namespace NativeNet
 		/// </summary>
 		~NativeString()
 		{
-			if (this.bufferPointer != null)
+			if (this.bufferPointer is not null)
 			{
 				NativeMemory.Free(this.bufferPointer);
 				this.bufferPointer = null;
@@ -303,7 +303,7 @@ namespace NativeNet
 				}
 				else
 				{
-					return ((new ReadOnlySpan<byte>(first.bufferPointer, first.length * sizeof(GenericTypeOfCharacter))).SequenceEqual(new ReadOnlySpan<byte>(second.bufferPointer, second.length * sizeof(GenericTypeOfCharacter))) == true);
+					return ((new ReadOnlySpan<byte>(first.bufferPointer,(int)(first.length * sizeof(GenericTypeOfCharacter)))).SequenceEqual(new ReadOnlySpan<byte>(second.bufferPointer,(int)(second.length * sizeof(GenericTypeOfCharacter)))) == true);
 				}
 			}
 		}
@@ -333,7 +333,7 @@ namespace NativeNet
 				}
 				else
 				{
-					return ((new ReadOnlySpan<byte>(first.bufferPointer, first.length * sizeof(GenericTypeOfCharacter))).SequenceEqual(new ReadOnlySpan<byte>(second.bufferPointer, second.length * sizeof(GenericTypeOfCharacter))) == false);
+					return ((new ReadOnlySpan<byte>(first.bufferPointer,(int)(first.length * sizeof(GenericTypeOfCharacter)))).SequenceEqual(new ReadOnlySpan<byte>(second.bufferPointer,(int)(second.length * sizeof(GenericTypeOfCharacter)))) == false);
 				}
 			}
 		}
@@ -378,7 +378,7 @@ namespace NativeNet
 			}
 			else
 			{
-				int foundedIndex = (new ReadOnlySpan<GenericTypeOfCharacter>(first.bufferPointer,first.length)).IndexOf(new ReadOnlySpan<GenericTypeOfCharacter>(second.bufferPointer,second.length));
+				int foundedIndex = (new ReadOnlySpan<GenericTypeOfCharacter>(first.bufferPointer,(int)(first.length))).IndexOf(new ReadOnlySpan<GenericTypeOfCharacter>(second.bufferPointer,(int)(second.length)));
 
 				if ((foundedIndex < 0) || (first.length < second.length))
 				{
@@ -404,7 +404,7 @@ namespace NativeNet
 		/// <param name="index"></param>
 		/// <returns>GenericTypeOfCharacter</returns>
 		/// <exception cref="NativeNetException"></exception>
-		public GenericTypeOfCharacter this[int index]
+		public GenericTypeOfCharacter this[uint index]
 		{
 			get
 			{
@@ -429,7 +429,19 @@ namespace NativeNet
 		/// <returns>bool</returns>
 		public override bool Equals(object other)
 		{
-			if (other is NativeString<GenericTypeOfCharacter> instance)
+			if (ReferenceEquals(other,null))
+			{
+				return false;
+			}
+			else if (ReferenceEquals(this,other))
+			{
+				return true;
+			}
+			else if (other.GetType() != this.GetType())
+			{
+				return false;
+			}
+			else if (other is NativeString<GenericTypeOfCharacter> instance)
 			{
 				return (this == instance);
 			}
@@ -465,15 +477,15 @@ namespace NativeNet
 			{
 				if (typeof(GenericTypeOfCharacter) == typeof(char8_t))
 				{
-					return Encoding.UTF8.GetString((byte*)(this.bufferPointer),this.length);
+					return Encoding.UTF8.GetString((byte*)(this.bufferPointer),(int)(this.length));
 				}
 				else if (typeof(GenericTypeOfCharacter) == typeof(char16_t))
 				{
-					return new string((char*)(this.bufferPointer),0,this.length);
+					return new string((char*)(this.bufferPointer),0,(int)(this.length));
 				}
 				else if (typeof(GenericTypeOfCharacter) == typeof(char32_t))
 				{
-					return Encoding.UTF32.GetString((byte*)(this.bufferPointer),this.length * sizeof(char32_t));
+					return Encoding.UTF32.GetString((byte*)(this.bufferPointer),(int)(this.length * sizeof(char32_t)));
 				}
 				else
 				{
@@ -490,7 +502,7 @@ namespace NativeNet
 		{
 			GC.SuppressFinalize(this);
 
-			if (this.bufferPointer != null)
+			if (this.bufferPointer is not null)
 			{
 				NativeMemory.Free(this.bufferPointer);
 				this.bufferPointer = null;
@@ -503,7 +515,7 @@ namespace NativeNet
 		///		dynamic
 		/// </summary>
 		/// <returns>int</returns>
-		public int getLength()
+		public uint getLength()
 		{
 			return this.length;
 		}
@@ -521,7 +533,7 @@ namespace NativeNet
 			}
 			else
 			{
-				return ((new ReadOnlySpan<GenericTypeOfCharacter>(this.bufferPointer,this.length)).IndexOf(new ReadOnlySpan<GenericTypeOfCharacter>(other.bufferPointer,other.length)) >= 0);
+				return ((new ReadOnlySpan<GenericTypeOfCharacter>(this.bufferPointer,(int)(this.length))).IndexOf(new ReadOnlySpan<GenericTypeOfCharacter>(other.bufferPointer,(int)(other.length))) >= 0);
 			}
 		}
 
@@ -531,7 +543,7 @@ namespace NativeNet
 		/// <param name="startingIndex"></param>
 		/// <param name="length"></param>
 		/// <returns>NativeString&lt;GenericTypeOfCharacter&gt;</returns>
-		public NativeString<GenericTypeOfCharacter> substring(int startingIndex,int length)
+		public NativeString<GenericTypeOfCharacter> substring(uint startingIndex,uint length)
 		{
 			NativeString<GenericTypeOfCharacter> result = new NativeString<GenericTypeOfCharacter>();
 			result.length = length;
@@ -572,7 +584,7 @@ namespace NativeNet
 			}
 			else if (other.length > 0)
 			{
-				int oldLength = this.length;
+				uint oldLength = this.length;
 				this.length += other.length;
 
 				if (this.length > this.capacity)
@@ -590,7 +602,7 @@ namespace NativeNet
 		/// <param name="index"></param>
 		/// <param name="character"></param>
 		/// <returns>void</returns>
-		public void insert(int index,GenericTypeOfCharacter character)
+		public void insert(uint index,GenericTypeOfCharacter character)
 		{
 			if ((index < 0) || (index >= this.length))
 			{
@@ -605,7 +617,7 @@ namespace NativeNet
 					this.increaseCapacity();
 				}
 
-				int i = 0;
+				uint i = 0;
 
 				for (i = (this.length - 1);i > index;i--)
 				{
@@ -623,7 +635,7 @@ namespace NativeNet
 		/// <param name="other"></param>
 		/// <returns>void</returns>
 		/// <exception cref="NativeNetException"></exception>
-		public void insert(int index,NativeString<GenericTypeOfCharacter> other)
+		public void insert(uint index,NativeString<GenericTypeOfCharacter> other)
 		{
 			if (other is null)
 			{
@@ -635,15 +647,15 @@ namespace NativeNet
 			}
 			else if (other.length > 0)
 			{
-				int oldLength = this.length;
-				int newLength = oldLength + other.length;
+				uint oldLength = this.length;
+				uint newLength = oldLength + other.length;
 
 				if (newLength > this.capacity)
 				{
 					this.reserveCapacity(newLength * 2);
 				}
 
-				int elementsToShift = oldLength - index;
+				uint elementsToShift = oldLength - index;
 
 				if (elementsToShift > 0)
 				{
@@ -660,7 +672,7 @@ namespace NativeNet
 		/// </summary>
 		/// <param name="index"></param>
 		/// <returns>void</returns>
-		public void remove(int index)
+		public void remove(uint index)
 		{
 			if ((index < 0) || (index > this.length) || (this.length == 0))
 			{
@@ -668,7 +680,7 @@ namespace NativeNet
 			}
 			else
 			{
-				int i = 0;
+				uint i = 0;
 
 				for (i = index;i < (this.length - 1);i++)
 				{
@@ -693,7 +705,7 @@ namespace NativeNet
 					this.capacity = 1;
 				}
 				
-				int newCapacity = this.capacity * 2;
+				uint newCapacity = this.capacity * 2;
 				void* reallocatedMemoryPointer = NativeMemory.Realloc(this.bufferPointer,(nuint)(sizeof(GenericTypeOfCharacter) * newCapacity));
 
 				if (reallocatedMemoryPointer == null)
@@ -718,7 +730,7 @@ namespace NativeNet
 		/// <param name="newCapacity"></param>
 		/// <returns>void</returns>
 		/// <exception cref="NativeNetException"></exception>
-		private void reserveCapacity(int newCapacity)
+		private void reserveCapacity(uint newCapacity)
 		{
 			try
 			{

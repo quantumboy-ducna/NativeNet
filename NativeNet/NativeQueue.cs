@@ -30,10 +30,10 @@ using System.Runtime.InteropServices;
 namespace NativeNet
 {
 	/// <summary>
-	///		C# generic class: `NativeStack`.
+	///		C# generic class: `NativeQueue`.
 	/// </summary>
 	/// <typeparam name="GenericType"></typeparam>
-	public unsafe sealed class NativeStack<GenericType> : IDisposable where GenericType : IComparable<GenericType>
+	public unsafe sealed class NativeQueue<GenericType> : IDisposable where GenericType : IComparable<GenericType>
 	{
 		private GenericType* bufferPointer;
 		private uint size;
@@ -41,37 +41,37 @@ namespace NativeNet
 
 
 		/// <summary>
-		///		Constructor of `NativeStack`.
+		///		Constructor of `NativeQueue`.
 		/// </summary>
-		public NativeStack()
+		public NativeQueue()
 		{
 			this.bufferPointer = null;
 			this.size = 0;
 			this.capacity = 0;
 		}
-		
+
 		/// <summary>
-		///		Constructor of `NativeStack`.
+		///		Constructor of `NativeQueue`.
 		/// </summary>
 		/// <param name="initialCapacity"></param>
-		public NativeStack(uint initialCapacity)
+		public NativeQueue(uint initialCapacity)
 		{
 			this.bufferPointer = null;
 			this.size = 0;
 			this.capacity = 0;
 			this.reserveCapacity(initialCapacity);
 		}
-		
+
 		/// <summary>
-		///		Constructor of `NativeStack`.
+		///		Constructor of `NativeQueue`.
 		/// </summary>
 		/// <param name="list"></param>
 		/// <exception cref="NativeNetException"></exception>
-		public NativeStack(NativeList<GenericType> list)
+		public NativeQueue(NativeList<GenericType> list)
 		{
 			if (list is null)
 			{
-				throw new NativeNetException("Can't instantiate an instance of `NativeStack` by the constructor of `NativeStack` from a nulled argument `list`!");
+				throw new NativeNetException("Can't instantiate an instance of `NativeQueue` by the constructor of `NativeQueue` from a nulled argument `list`!");
 			}
 			else
 			{
@@ -80,7 +80,7 @@ namespace NativeNet
 				this.capacity = list.count();
 				this.reserveCapacity(this.capacity);
 				uint i = 0;
-				
+
 				for (i = 0;i < this.size;i++)
 				{
 					(this.bufferPointer)[i] = list[i];
@@ -89,15 +89,15 @@ namespace NativeNet
 		}
 
 		/// <summary>
-		///		Copy constructor of `NativeStack`.
+		///		Copy constructor of `NativeQueue`.
 		/// </summary>
 		/// <param name="other"></param>
 		/// <exception cref="NativeNetException"></exception>
-		public NativeStack(NativeStack<GenericType> other)
+		public NativeQueue(NativeQueue<GenericType> other)
 		{
 			if (other is null)
 			{
-				throw new NativeNetException("Can't instantiate an instance of `NativeStack` by the copy constructor of `NativeStack` from a nulled argument `other`!");
+				throw new NativeNetException("Can't instantiate an instance of `NativeQueue` by the copy constructor of `NativeQueue` from a nulled argument `other`!");
 			}
 			else
 			{
@@ -107,11 +107,11 @@ namespace NativeNet
 				Unsafe.CopyBlock(this.bufferPointer,other.bufferPointer,(uint)(Unsafe.SizeOf<GenericType>() * other.size));
 			}
 		}
-
+		
 		/// <summary>
-		///		Destructor of `NativeStack`.
+		///		Destructor of `NativeQueue`.
 		/// </summary>
-		~NativeStack()
+		~NativeQueue()
 		{
 			if (this.bufferPointer is not null)
 			{
@@ -121,7 +121,7 @@ namespace NativeNet
 				this.capacity = 0;
 			}
 		}
-		
+
 		/// <summary>
 		///		static
 		///		operator==
@@ -129,7 +129,7 @@ namespace NativeNet
 		/// <param name="first"></param>
 		/// <param name="second"></param>
 		/// <returns>bool</returns>
-		public static bool operator==(NativeStack<GenericType> first,NativeStack<GenericType> second)
+		public static bool operator==(NativeQueue<GenericType> first,NativeQueue<GenericType> second)
 		{
 			if (ReferenceEquals(first,second) == true)
 			{
@@ -152,7 +152,7 @@ namespace NativeNet
 		/// <param name="first"></param>
 		/// <param name="second"></param>
 		/// <returns>bool</returns>
-		public static bool operator!=(NativeStack<GenericType> first,NativeStack<GenericType> second)
+		public static bool operator!=(NativeQueue<GenericType> first,NativeQueue<GenericType> second)
 		{
 			if (ReferenceEquals(first,second) == true)
 			{
@@ -188,7 +188,7 @@ namespace NativeNet
 			{
 				return false;
 			}
-			else if (other is NativeStack<GenericType> instance)
+			else if (other is NativeQueue<GenericType> instance)
 			{
 				return (this == instance);
 			}
@@ -247,41 +247,6 @@ namespace NativeNet
 		/// <summary>
 		///		dynamic
 		/// </summary>
-		/// <param name="element"></param>
-		/// <returns>void</returns>
-		public void push(GenericType element)
-		{
-			if ((this.capacity < this.size) || (this.bufferPointer == null))
-			{
-				this.increaseCapacity();
-			}
-
-			(this.bufferPointer)[this.size] = element;
-			(this.size)++;
-		}
-
-		/// <summary>
-		///		dynamic
-		/// </summary>
-		/// <returns>GenericType</returns>
-		/// <exception cref="NativeNetException"></exception>
-		public GenericType pop()
-		{
-			if ((this.bufferPointer == null) || (this.size == 0) || (this.capacity == 0))
-			{
-				throw new NativeNetException("The current instance of `NativeStack` is empty!");
-			}
-			else
-			{
-				(this.size)--;
-
-				return (this.bufferPointer)[this.size];
-			}
-		}
-		
-		/// <summary>
-		///		dynamic
-		/// </summary>
 		/// <returns>GenericType</returns>
 		/// <exception cref="NativeNetException"></exception>
 		public GenericType peek()
@@ -292,7 +257,7 @@ namespace NativeNet
 			}
 			else
 			{
-				return (this.bufferPointer)[this.size - 1];
+				return (this.bufferPointer)[0];
 			}
 		}
 
@@ -311,7 +276,6 @@ namespace NativeNet
 					(this.bufferPointer)[i] = default;
 				}
 
-				this.bufferPointer = null;
 				this.size = 0;
 				this.capacity = 0;
 			}

@@ -19,12 +19,15 @@
 	<Copyright>Copyright©2026, Nguyễn Anh Đức (workofduc@gmail.com).</Copyright>
 	<Description>NativeNet - a native library but written in unsafe C#.</Description>
 	<RepositoryType>git</RepositoryType>
-	<PackageTags>NativeNet;nativenet;unsafe;</PackageTags>
+	<PackageTags>NativeNet;nativenet;unsafe;native;C#;csharp;csh;</PackageTags>
 	<PackageLicenseFile>LICENSE</PackageLicenseFile>
 	<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
 	<AnalysisLevel>latest</AnalysisLevel>
 	<PackageReadmeFile>README.md</PackageReadmeFile>
 	<StartupObject>NativeNet.NativeNet</StartupObject>
+	<RootNamespace>NativeNet</RootNamespace>
+	<SignAssembly>False</SignAssembly>
+	<Authors>Nguyễn Anh Đức</Authors>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -35,7 +38,7 @@
 	<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
 	<IsPublishable>False</IsPublishable>
 	<IsTrimmable>False</IsTrimmable>
-	<NoWarn>1701;1702;CS1570;CS1587;CS1591;CS8500;CA1050;IDE0001;IDE0003;IDE0017;IDE0028;IDE0047;IDE0054;IDE0090;IDE1006;</NoWarn>
+	<NoWarn>1701;1702;CS1570;CS1587;CS1591;CS8500;CA1050;IDE0001;IDE0003;IDE0017;IDE0028;IDE0041;IDE0047;IDE0054;IDE0090;IDE1006;</NoWarn>
 	<FileAlignment>1024</FileAlignment>
   </PropertyGroup>
 
@@ -47,7 +50,7 @@
 	<IsPublishable>False</IsPublishable>
 	<Optimize>True</Optimize>
 	<IsTrimmable>False</IsTrimmable>
-	<NoWarn>1701;1702;CS1570;CS1587;CS1591;CS8500;CA1050;IDE0001;IDE0003;IDE0017;IDE0028;IDE0047;IDE0054;IDE0090;IDE1006;</NoWarn>
+	<NoWarn>1701;1702;CS1570;CS1587;CS1591;CS8500;CA1050;IDE0001;IDE0003;IDE0017;IDE0028;IDE0041;IDE0047;IDE0054;IDE0090;IDE1006;</NoWarn>
 	<FileAlignment>1024</FileAlignment>
   </PropertyGroup>
 

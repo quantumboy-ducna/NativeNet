@@ -34,8 +34,8 @@ namespace NativeNet
 	/// <typeparam name="GenericType"></typeparam>
 	public unsafe sealed class NativeList<GenericType> : IDisposable where GenericType : IComparable<GenericType>
 	{
-		private int size;
-		private int capacity;
+		private uint size;
+		private uint capacity;
 		private GenericType* bufferPointer;
 
 
@@ -53,7 +53,7 @@ namespace NativeNet
 		///		Constructor of `NativeList`.
 		/// </summary>
 		/// <param name="capacity"></param>
-		public NativeList(int capacity)
+		public NativeList(uint capacity)
 		{
 			this.size = 0;
 
@@ -99,10 +99,59 @@ namespace NativeNet
 		/// </summary>
 		~NativeList()
 		{
-			NativeMemory.Free(this.bufferPointer);
-			this.size = 0;
-			this.capacity = 0;
-			this.bufferPointer = null;
+			if (this.bufferPointer is not null)
+			{
+				NativeMemory.Free(this.bufferPointer);
+				this.size = 0;
+				this.capacity = 0;
+				this.bufferPointer = null;
+			}
+		}
+		
+		/// <summary>
+		///		static
+		///		operator==
+		/// </summary>
+		/// <param name="first"></param>
+		/// <param name="second"></param>
+		/// <returns>bool</returns>
+		public static bool operator==(NativeList<GenericType> first,NativeList<GenericType> second)
+		{
+			if (ReferenceEquals(first,second) == true)
+			{
+				return true;
+			}
+			else if (((first is null) && (second is not null)) || ((first is not null) && (second is null)))
+			{
+				return false;
+			}
+			else
+			{
+				return ((first.size == second.size) && ((new ReadOnlySpan<GenericType>(first.bufferPointer,(int)(first.size))) == (new ReadOnlySpan<GenericType>(second.bufferPointer,(int)(second.size)))));
+			}
+		}
+		
+		/// <summary>
+		///		static
+		///		operator!=
+		/// </summary>
+		/// <param name="first"></param>
+		/// <param name="second"></param>
+		/// <returns>bool</returns>
+		public static bool operator!=(NativeList<GenericType> first,NativeList<GenericType> second)
+		{
+			if (ReferenceEquals(first,second) == true)
+			{
+				return false;
+			}
+			else if (((first is null) && (second is not null)) || ((first is not null) && (second is null)))
+			{
+				return true;
+			}
+			else
+			{
+				return ((first.size != second.size) || ((new ReadOnlySpan<GenericType>(first.bufferPointer,(int)(first.size))) != (new ReadOnlySpan<GenericType>(second.bufferPointer,(int)(second.size)))));
+			}
 		}
 
 		/// <summary>
@@ -111,7 +160,7 @@ namespace NativeNet
 		/// </summary>
 		/// <param name="index"></param>
 		/// <returns>GenericType</returns>
-		public GenericType this[int index]
+		public GenericType this[uint index]
 		{
 			get
 			{
@@ -141,6 +190,46 @@ namespace NativeNet
 
 		/// <summary>
 		///		dynamic
+		///		override
+		/// </summary>
+		/// <param name="other"></param>
+		/// <returns>bool</returns>
+		public override bool Equals(object other)
+		{
+			if (ReferenceEquals(other,null))
+			{
+				return false;
+			}
+			else if (ReferenceEquals(this,other))
+			{
+				return true;
+			}
+			else if (other.GetType() != this.GetType())
+			{
+				return false;
+			}
+			else if (other is NativeList<GenericType> instance)
+			{
+				return (this == instance);
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		/// <summary>
+		///		dynamic
+		///		override
+		/// </summary>
+		/// <returns>int</returns>
+		public override int GetHashCode()
+		{
+			return HashCode.Combine(this.size,this.capacity,(UIntPtr)(this.bufferPointer));
+		}
+
+		/// <summary>
+		///		dynamic
 		/// </summary>
 		/// <returns>void</returns>
 		void IDisposable.Dispose()
@@ -152,8 +241,8 @@ namespace NativeNet
 		/// <summary>
 		///		dynamic
 		/// </summary>
-		/// <returns>int</returns>
-		public int getSize()
+		/// <returns>uint</returns>
+		public uint count()
 		{
 			return this.size;
 		}
@@ -195,7 +284,7 @@ namespace NativeNet
 					this.increaseCapacity();
 				}
 
-				int i = 0;
+				uint i = 0;
 
 				for (i = this.size;i > index;i--)
 				{
@@ -214,7 +303,7 @@ namespace NativeNet
 		/// <exception cref="NativeNetException"></exception>
 		public void remove(GenericType element)
 		{
-			int i = 0;
+			uint i = 0;
 
 			for (i = 0;i < this.size;i++)
 			{
@@ -233,7 +322,7 @@ namespace NativeNet
 		/// <param name="index"></param>
 		/// <returns>void</returns>
 		/// <exception cref="NativeNetException"></exception>
-		public void removeByIndex(int index)
+		public void removeByIndex(uint index)
 		{
 			if ((index >= this.size) || (index < 0))
 			{
@@ -241,7 +330,7 @@ namespace NativeNet
 			}
 			else
 			{
-				int i = 0;
+				uint i = 0;
 
 				for (i = index;i < (this.size - 1);i++)
 				{
@@ -277,11 +366,11 @@ namespace NativeNet
 		///		dynamic
 		/// </summary>
 		/// <param name="element"></param>
-		/// <returns>int</returns>
+		/// <returns>uint</returns>
 		/// <exception cref="NativeNetException"></exception>
-		public int getLastIndexOfElement(GenericType element)
+		public uint getLastIndexOfElement(GenericType element)
 		{
-			int i = this.size - 1;
+			uint i = this.size - 1;
 
 			for (i = (this.size - 1);i >= 0;i--)
 			{
@@ -300,7 +389,7 @@ namespace NativeNet
 		/// <returns>void</returns>
 		public void clear()
 		{
-			if ((this.bufferPointer != null) && (this.capacity > 0))
+			if ((this.bufferPointer is not null) && (this.capacity > 0))
 			{
 				int i = 0;
 
@@ -309,6 +398,7 @@ namespace NativeNet
 					(this.bufferPointer)[i] = default;
 				}
 
+				this.bufferPointer = null;
 				this.size = 0;
 				this.capacity = 0;
 			}

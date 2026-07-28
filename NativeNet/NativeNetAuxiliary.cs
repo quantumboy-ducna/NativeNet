@@ -42,7 +42,7 @@ namespace NativeNet
 		/// <exception cref="Exception"></exception>
 		[DoesNotReturn]
 		[MethodImpl(MethodImplOptions.NoInlining)]
-		public static void throwOutOfBoundException(int index)
+		public static void throwOutOfBoundException(uint index)
 		{
 			throw new NativeNetException("Argument `index` is out of bound: `" + Convert.ToString(index) + "`.");
 		}
