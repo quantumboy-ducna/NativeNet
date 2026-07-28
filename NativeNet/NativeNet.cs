@@ -17,13 +17,6 @@
 ///		For commercial licensing inquiries, pricing, or to obtain a proprietary license agreement, please contact: workofduc@gmail.com
 /// </remarks>
 
-#pragma warning disable CS0693
-#pragma warning disable CS8500
-#pragma warning disable IDE0001
-#pragma warning disable IDE0003
-#pragma warning disable IDE0047
-#pragma warning disable IDE0054
-
 /** Inclusion(s) of the standard C# namespace(s).**/
 using System;
 
@@ -47,6 +40,8 @@ namespace NativeNet
 			nativeString.insert(0,"00000");
 			Console.WriteLine(nativeString);
 			Console.WriteLine(nativeString.contains("abcdef"));
+			NativeString<char32_t> substring = nativeString - "00000";
+			Console.WriteLine(substring);
 		}*/
 	};
 };

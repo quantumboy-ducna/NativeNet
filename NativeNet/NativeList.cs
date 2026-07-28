@@ -317,6 +317,23 @@ namespace NativeNet
 		/// <summary>
 		///		dynamic
 		/// </summary>
+		/// <returns>List&lt;GenericType&gt;</returns>
+		public List<GenericType> convertToStandardList()
+		{
+			List<GenericType> result = new List<GenericType>();
+			int i = 0;
+
+			for (i = 0;i < this.size;i++)
+			{
+				result.Add((this.bufferPointer)[i]);
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		///		dynamic
+		/// </summary>
 		/// <returns>void</returns>
 		private void increaseCapacity()
 		{

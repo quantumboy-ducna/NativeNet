@@ -70,51 +70,60 @@ namespace NativeNet
 		/// <exception cref="NativeNetException"></exception>
 		public NativeString(ReadOnlySpan<byte> byteSpan)
 		{
-			if (typeof(GenericTypeOfCharacter) == typeof(char8_t))
+			if (byteSpan.Length == 0)
 			{
-				this.length = byteSpan.Length;
-				this.capacity = this.length;
-				uint byteCount = (uint)this.length;
-				this.bufferPointer = (GenericTypeOfCharacter*)(NativeMemory.Alloc(byteCount));
-
-				fixed (byte* bytePointer = byteSpan)
-				{
-					Unsafe.CopyBlock(this.bufferPointer,bytePointer,byteCount);
-				}
-			}
-			else if (typeof(GenericTypeOfCharacter) == typeof(char16_t))
-			{
-				char[] utf16Bytes = new char[Encoding.UTF8.GetCharCount(byteSpan)];
-				Encoding.UTF8.GetChars(byteSpan,utf16Bytes);
-				this.length = byteSpan.Length;
-				this.capacity = this.length;
-				uint byteCount = (uint)(sizeof(GenericTypeOfCharacter) * this.length);
-				this.bufferPointer = (GenericTypeOfCharacter*)(NativeMemory.Alloc(byteCount));
-
-				fixed (char* characterPointer = utf16Bytes)
-				{
-					Unsafe.CopyBlock(this.bufferPointer,characterPointer,byteCount);
-				}
-			}
-			else if (typeof(GenericTypeOfCharacter) == typeof(char32_t))
-			{
-				Span<char> characterSpan = stackalloc char[Encoding.UTF8.GetCharCount(byteSpan)];
-				Encoding.UTF8.GetChars(byteSpan,characterSpan);
-				byte[] utf32Bytes = new byte[Encoding.UTF32.GetByteCount(characterSpan)];
-				Encoding.UTF32.GetBytes(characterSpan,utf32Bytes);
-				this.length = utf32Bytes.Length / 4;
-				this.capacity = this.length;
-				uint byteCount = (uint)(sizeof(GenericTypeOfCharacter) * this.length);
-				this.bufferPointer = (GenericTypeOfCharacter*)(NativeMemory.Alloc(byteCount));
-
-				fixed (byte* bytePointer = utf32Bytes)
-				{
-					Unsafe.CopyBlock(this.bufferPointer,bytePointer,byteCount);
-				}
+				this.bufferPointer = null;
+				this.length = 0;
+				this.capacity = 0;
 			}
 			else
 			{
-				throw new NativeNetException("Can't instantiate an instance of `NativeString` by the constructor of `NativeString` from an invalid generic type argument: `" + typeof(GenericTypeOfCharacter).Name + "`!");
+				if (typeof(GenericTypeOfCharacter) == typeof(char8_t))
+				{
+					this.length = byteSpan.Length;
+					this.capacity = this.length;
+					uint byteCount = (uint)this.length;
+					this.bufferPointer = (GenericTypeOfCharacter*)(NativeMemory.Alloc(byteCount));
+
+					fixed (byte* bytePointer = byteSpan)
+					{
+						Unsafe.CopyBlock(this.bufferPointer,bytePointer,byteCount);
+					}
+				}
+				else if (typeof(GenericTypeOfCharacter) == typeof(char16_t))
+				{
+					char[] utf16Bytes = new char[Encoding.UTF8.GetCharCount(byteSpan)];
+					Encoding.UTF8.GetChars(byteSpan,utf16Bytes);
+					this.length = byteSpan.Length;
+					this.capacity = this.length;
+					uint byteCount = (uint)(sizeof(GenericTypeOfCharacter) * this.length);
+					this.bufferPointer = (GenericTypeOfCharacter*)(NativeMemory.Alloc(byteCount));
+
+					fixed (char* characterPointer = utf16Bytes)
+					{
+						Unsafe.CopyBlock(this.bufferPointer,characterPointer,byteCount);
+					}
+				}
+				else if (typeof(GenericTypeOfCharacter) == typeof(char32_t))
+				{
+					Span<char> characterSpan = stackalloc char[Encoding.UTF8.GetCharCount(byteSpan)];
+					Encoding.UTF8.GetChars(byteSpan,characterSpan);
+					byte[] utf32Bytes = new byte[Encoding.UTF32.GetByteCount(characterSpan)];
+					Encoding.UTF32.GetBytes(characterSpan,utf32Bytes);
+					this.length = utf32Bytes.Length / 4;
+					this.capacity = this.length;
+					uint byteCount = (uint)(sizeof(GenericTypeOfCharacter) * this.length);
+					this.bufferPointer = (GenericTypeOfCharacter*)(NativeMemory.Alloc(byteCount));
+
+					fixed (byte* bytePointer = utf32Bytes)
+					{
+						Unsafe.CopyBlock(this.bufferPointer,bytePointer,byteCount);
+					}
+				}
+				else
+				{
+					throw new NativeNetException("Can't instantiate an instance of `NativeString` by the constructor of `NativeString` from an invalid generic type argument: `" + typeof(GenericTypeOfCharacter).Name + "`!");
+				}
 			}
 		}
 
@@ -131,47 +140,56 @@ namespace NativeNet
 			}
 			else
 			{
-				if (typeof(GenericTypeOfCharacter) == typeof(char8_t))
+				if (primitiveString.Length == 0)
 				{
-					byte[] utf8Bytes = Encoding.UTF8.GetBytes(primitiveString);
-					this.length = utf8Bytes.Length;
-					this.capacity = this.length;
-					uint byteCount = (uint)this.length;
-					this.bufferPointer = (GenericTypeOfCharacter*)(NativeMemory.Alloc(byteCount));
-
-					fixed (byte* bytePointer = utf8Bytes)
-					{
-						Unsafe.CopyBlock(this.bufferPointer,bytePointer,byteCount);
-					}
-				}
-				else if (typeof(GenericTypeOfCharacter) == typeof(char16_t))
-				{
-					this.length = primitiveString.Length;
-					this.capacity = this.length;
-					uint byteCount = (uint)(sizeof(GenericTypeOfCharacter) * this.length);
-					this.bufferPointer = (GenericTypeOfCharacter*)(NativeMemory.Alloc(byteCount));
-
-					fixed (char* characterPointer = primitiveString)
-					{
-						Unsafe.CopyBlock(this.bufferPointer,characterPointer,byteCount);
-					}
-				}
-				else if (typeof(GenericTypeOfCharacter) == typeof(char32_t))
-				{
-					byte[] utf32Bytes = Encoding.UTF32.GetBytes(primitiveString);
-					this.length = utf32Bytes.Length / 4;
-					this.capacity = this.length;
-					uint byteCount = (uint)(sizeof(GenericTypeOfCharacter) * this.length);
-					this.bufferPointer = (GenericTypeOfCharacter*)(NativeMemory.Alloc(byteCount));
-
-					fixed (byte* bytePointer = utf32Bytes)
-					{
-						Unsafe.CopyBlock(this.bufferPointer,bytePointer,byteCount);
-					}
+					this.bufferPointer = null;
+					this.length = 0;
+					this.capacity = 0;
 				}
 				else
 				{
-					throw new NativeNetException("Can't instantiate an instance of `NativeString` by the constructor of `NativeString` from an invalid generic type argument: `" + typeof(GenericTypeOfCharacter).Name + "`!");
+					if (typeof(GenericTypeOfCharacter) == typeof(char8_t))
+					{
+						byte[] utf8Bytes = Encoding.UTF8.GetBytes(primitiveString);
+						this.length = utf8Bytes.Length;
+						this.capacity = this.length;
+						uint byteCount = (uint)this.length;
+						this.bufferPointer = (GenericTypeOfCharacter*)(NativeMemory.Alloc(byteCount));
+
+						fixed (byte* bytePointer = utf8Bytes)
+						{
+							Unsafe.CopyBlock(this.bufferPointer,bytePointer,byteCount);
+						}
+					}
+					else if (typeof(GenericTypeOfCharacter) == typeof(char16_t))
+					{
+						this.length = primitiveString.Length;
+						this.capacity = this.length;
+						uint byteCount = (uint)(sizeof(GenericTypeOfCharacter) * this.length);
+						this.bufferPointer = (GenericTypeOfCharacter*)(NativeMemory.Alloc(byteCount));
+
+						fixed (char* characterPointer = primitiveString)
+						{
+							Unsafe.CopyBlock(this.bufferPointer,characterPointer,byteCount);
+						}
+					}
+					else if (typeof(GenericTypeOfCharacter) == typeof(char32_t))
+					{
+						byte[] utf32Bytes = Encoding.UTF32.GetBytes(primitiveString);
+						this.length = utf32Bytes.Length / 4;
+						this.capacity = this.length;
+						uint byteCount = (uint)(sizeof(GenericTypeOfCharacter) * this.length);
+						this.bufferPointer = (GenericTypeOfCharacter*)(NativeMemory.Alloc(byteCount));
+
+						fixed (byte* bytePointer = utf32Bytes)
+						{
+							Unsafe.CopyBlock(this.bufferPointer,bytePointer,byteCount);
+						}
+					}
+					else
+					{
+						throw new NativeNetException("Can't instantiate an instance of `NativeString` by the constructor of `NativeString` from an invalid generic type argument: `" + typeof(GenericTypeOfCharacter).Name + "`!");
+					}
 				}
 			}
 		}
@@ -201,10 +219,13 @@ namespace NativeNet
 		/// </summary>
 		~NativeString()
 		{
-			NativeMemory.Free(this.bufferPointer);
-			this.bufferPointer = null;
-			this.length = 0;
-			this.capacity = 0;
+			if (this.bufferPointer != null)
+			{
+				NativeMemory.Free(this.bufferPointer);
+				this.bufferPointer = null;
+				this.length = 0;
+				this.capacity = 0;
+			}
 		}
 
 		/// <summary>
@@ -343,6 +364,40 @@ namespace NativeNet
 		}
 
 		/// <summary>
+		///		static
+		///		operator-
+		/// </summary>
+		/// <param name="first"></param>
+		/// <param name="second"></param>
+		/// <returns>NativeString&lt;GenericTypeOfCharacter&gt;</returns>
+		public static NativeString<GenericTypeOfCharacter> operator-(NativeString<GenericTypeOfCharacter> first,NativeString<GenericTypeOfCharacter> second)
+		{
+			if ((first is null) || (second is null))
+			{
+				return null;
+			}
+			else
+			{
+				int foundedIndex = (new ReadOnlySpan<GenericTypeOfCharacter>(first.bufferPointer,first.length)).IndexOf(new ReadOnlySpan<GenericTypeOfCharacter>(second.bufferPointer,second.length));
+
+				if ((foundedIndex < 0) || (first.length < second.length))
+				{
+					throw new NativeNetException("Can't subtract argument `second` from argument `first` because the data of the latter instance doesn't contain the data of the former one!");
+				}
+				else
+				{
+					NativeString<GenericTypeOfCharacter> result = new NativeString<GenericTypeOfCharacter>();
+					result.length = first.length - second.length;
+					result.bufferPointer = (GenericTypeOfCharacter*)(NativeMemory.Alloc((nuint)(sizeof(GenericTypeOfCharacter) * result.length)));
+					Buffer.MemoryCopy(first.bufferPointer,result.bufferPointer,sizeof(GenericTypeOfCharacter) * foundedIndex,sizeof(GenericTypeOfCharacter) * foundedIndex);
+					Buffer.MemoryCopy(first.bufferPointer + foundedIndex + second.length,result.bufferPointer + foundedIndex,sizeof(GenericTypeOfCharacter) * (result.length - foundedIndex),sizeof(GenericTypeOfCharacter) * (result.length - foundedIndex));
+
+					return result;
+				}
+			}
+		}
+
+		/// <summary>
 		///		dynamic
 		///		operator[]
 		/// </summary>
@@ -353,7 +408,7 @@ namespace NativeNet
 		{
 			get
 			{
-				if ((index >= this.length) || (index < 0))
+				if ((index >= this.length) || (index < 0) || (this.bufferPointer == null))
 				{
 					NativeNetAuxiliary.throwOutOfBoundException(index);
 
@@ -406,22 +461,24 @@ namespace NativeNet
 			{
 				return string.Empty;
 			}
-
-			if (typeof(GenericTypeOfCharacter) == typeof(char8_t))
-			{
-				return Encoding.UTF8.GetString((byte*)(this.bufferPointer),this.length);
-			}
-			else if (typeof(GenericTypeOfCharacter) == typeof(char16_t))
-			{
-				return new string((char*)(this.bufferPointer),0,this.length);
-			}
-			else if (typeof(GenericTypeOfCharacter) == typeof(char32_t))
-			{
-				return Encoding.UTF32.GetString((byte*)(this.bufferPointer),this.length * sizeof(char32_t));
-			}
 			else
 			{
-				throw new NativeNetException($"Unsupported character type: `{typeof(GenericTypeOfCharacter).Name}`!");
+				if (typeof(GenericTypeOfCharacter) == typeof(char8_t))
+				{
+					return Encoding.UTF8.GetString((byte*)(this.bufferPointer),this.length);
+				}
+				else if (typeof(GenericTypeOfCharacter) == typeof(char16_t))
+				{
+					return new string((char*)(this.bufferPointer),0,this.length);
+				}
+				else if (typeof(GenericTypeOfCharacter) == typeof(char32_t))
+				{
+					return Encoding.UTF32.GetString((byte*)(this.bufferPointer),this.length * sizeof(char32_t));
+				}
+				else
+				{
+					throw new NativeNetException($"Unsupported character type: `{typeof(GenericTypeOfCharacter).Name}`!");
+				}
 			}
 		}
 
@@ -437,10 +494,9 @@ namespace NativeNet
 			{
 				NativeMemory.Free(this.bufferPointer);
 				this.bufferPointer = null;
+				this.length = 0;
+				this.capacity = 0;
 			}
-
-			this.length = 0;
-			this.capacity = 0;
 		}
 
 		/// <summary>
