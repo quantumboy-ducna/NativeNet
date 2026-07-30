@@ -32,7 +32,7 @@ namespace NativeNet
 	///		C# generic class: `NativeList`.
 	/// </summary>
 	/// <typeparam name="GenericType"></typeparam>
-	public unsafe sealed class NativeList<GenericType> : IDisposable where GenericType : IComparable<GenericType>
+	public unsafe sealed class NativeList<GenericType> : IDisposable where GenericType : unmanaged,IComparable<GenericType>
 	{
 		private uint size;
 		private uint capacity;
@@ -232,10 +232,17 @@ namespace NativeNet
 		///		dynamic
 		/// </summary>
 		/// <returns>void</returns>
-		void IDisposable.Dispose()
+		public void Dispose()
 		{
+			if (this.bufferPointer is not null)
+			{
+				NativeMemory.Free(this.bufferPointer);
+				this.bufferPointer = null;
+			}
+
+			this.size = 0;
+			this.capacity = 0;
 			GC.SuppressFinalize(this);
-			this.clear();
 		}
 
 		/// <summary>
@@ -303,17 +310,16 @@ namespace NativeNet
 		/// <exception cref="NativeNetException"></exception>
 		public void remove(GenericType element)
 		{
-			uint i = 0;
+			uint foundedIndex = (uint)(new ReadOnlySpan<GenericType>(this.bufferPointer,(int)(this.size))).IndexOf(element);
 
-			for (i = 0;i < this.size;i++)
+			if (foundedIndex >= 0)
 			{
-				if ((this.bufferPointer)[i].Equals(element) == true)
-				{
-					this.removeByIndex(i);
-				}
+				this.removeByIndex(foundedIndex);
 			}
-
-			throw new NativeNetException("Argument `element` isn't found in the current instance of `NativeList`!");
+			else
+			{
+				throw new NativeNetException("Argument `element` isn't found in the current instance of `NativeList`!");
+			}
 		}
 
 		/// <summary>
@@ -345,21 +351,20 @@ namespace NativeNet
 		///		dynamic
 		/// </summary>
 		/// <param name="element"></param>
-		/// <returns>int</returns>
+		/// <returns>uint</returns>
 		/// <exception cref="NativeNetException"></exception>
-		public int getFirstIndexOfElement(GenericType element)
+		public uint getFirstIndexOfElement(GenericType element)
 		{
-			int i = 0;
+			uint foundedIndex = (uint)(new ReadOnlySpan<GenericType>(this.bufferPointer,(int)(this.size))).IndexOf(element);
 
-			for (i = 0;i < this.size;i++)
+			if (foundedIndex >= 0)
 			{
-				if ((this.bufferPointer)[i].Equals(element) == true)
-				{
-					return i;
-				}
+				return foundedIndex;
 			}
-
-			throw new NativeNetException("Argument `element` isn't found in the current instance of `NativeList`!");
+			else
+			{
+				throw new NativeNetException("Argument `element` isn't found in the current instance of `NativeList`!");
+			}
 		}
 
 		/// <summary>
@@ -370,17 +375,16 @@ namespace NativeNet
 		/// <exception cref="NativeNetException"></exception>
 		public uint getLastIndexOfElement(GenericType element)
 		{
-			uint i = this.size - 1;
+			uint foundedIndex = (uint)(new ReadOnlySpan<GenericType>(this.bufferPointer,(int)(this.size))).LastIndexOf(element);
 
-			for (i = (this.size - 1);i >= 0;i--)
+			if (foundedIndex >= 0)
 			{
-				if ((this.bufferPointer)[i].Equals(element) == true)
-				{
-					return i;
-				}
+				return foundedIndex;
 			}
-
-			throw new NativeNetException("Argument `element` isn't found in the current instance of `NativeList`!");
+			else
+			{
+				throw new NativeNetException("Argument `element` isn't found in the current instance of `NativeList`!");
+			}
 		}
 
 		/// <summary>
@@ -398,7 +402,6 @@ namespace NativeNet
 					(this.bufferPointer)[i] = default;
 				}
 
-				this.bufferPointer = null;
 				this.size = 0;
 				this.capacity = 0;
 			}
@@ -419,6 +422,15 @@ namespace NativeNet
 			}
 
 			return result;
+		}
+
+		/// <summary>
+		///		dynamic
+		/// </summary>
+		/// <returns>ReadOnlySpan&lt;GenericType&gt;</returns>
+		public ReadOnlySpan<GenericType> asReadOnlySpan()
+		{
+			return new ReadOnlySpan<GenericType>(this.bufferPointer,(int)(this.size));
 		}
 
 		/// <summary>
@@ -451,16 +463,3 @@ namespace NativeNet
 		}
 	};
 };
-
-/*public struct MainEntry
-{
-	public static void Main()
-	{
-		NativeNet.NativeList<int> list = new NativeNet.NativeList<int>();
-		list.add(0);
-		list.add(0);
-		list.add(0);
-		list.add(0);
-		list.insert(0,0);
-	}
-};*/

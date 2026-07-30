@@ -43,5 +43,29 @@ namespace NativeNet
 			NativeString<char32_t> substring = nativeString - "00000";
 			Console.WriteLine(substring);
 		}*/
+		
+		/*public static void Main()
+		{
+			NativeNet.NativeList<int> list = new NativeNet.NativeList<int>();
+			list.add(0);
+			list.add(0);
+			list.add(0);
+			list.add(0);
+			list.insert(0,0);
+		}*/
+		
+		public static void Main()
+		{
+			NativeNet.NativeQueue<int> queue = new NativeNet.NativeQueue<int>(5);
+			queue.push(0);
+			queue.push(1);
+			queue.push(2);
+			queue.push(3);
+			queue.push(4);
+			queue.pop();
+			queue.pop();
+			queue.pop();
+			queue.push(5);
+		}
 	};
 };

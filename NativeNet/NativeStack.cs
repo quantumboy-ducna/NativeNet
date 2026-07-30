@@ -33,11 +33,11 @@ namespace NativeNet
 	///		C# generic class: `NativeStack`.
 	/// </summary>
 	/// <typeparam name="GenericType"></typeparam>
-	public unsafe sealed class NativeStack<GenericType> : IDisposable where GenericType : IComparable<GenericType>
+	public unsafe sealed class NativeStack<GenericType> : IDisposable where GenericType : unmanaged,IComparable<GenericType>
 	{
-		private GenericType* bufferPointer;
 		private uint size;
 		private uint capacity;
+		private GenericType* bufferPointer;
 
 
 		/// <summary>
@@ -212,10 +212,17 @@ namespace NativeNet
 		///		dynamic
 		/// </summary>
 		/// <returns>void</returns>
-		void IDisposable.Dispose()
+		public void Dispose()
 		{
+			if (this.bufferPointer is not null)
+			{
+				NativeMemory.Free(this.bufferPointer);
+				this.bufferPointer = null;
+			}
+
+			this.size = 0;
+			this.capacity = 0;
 			GC.SuppressFinalize(this);
-			this.clear();
 		}
 
 		/// <summary>
@@ -311,7 +318,6 @@ namespace NativeNet
 					(this.bufferPointer)[i] = default;
 				}
 
-				this.bufferPointer = null;
 				this.size = 0;
 				this.capacity = 0;
 			}

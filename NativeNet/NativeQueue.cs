@@ -33,11 +33,12 @@ namespace NativeNet
 	///		C# generic class: `NativeQueue`.
 	/// </summary>
 	/// <typeparam name="GenericType"></typeparam>
-	public unsafe sealed class NativeQueue<GenericType> : IDisposable where GenericType : IComparable<GenericType>
+	public unsafe sealed class NativeQueue<GenericType> : IDisposable where GenericType : unmanaged,IComparable<GenericType>
 	{
-		private GenericType* bufferPointer;
 		private uint size;
 		private uint capacity;
+		private uint pivot;
+		private GenericType* bufferPointer;
 
 
 		/// <summary>
@@ -48,6 +49,7 @@ namespace NativeNet
 			this.bufferPointer = null;
 			this.size = 0;
 			this.capacity = 0;
+			this.pivot = 0;
 		}
 
 		/// <summary>
@@ -59,6 +61,7 @@ namespace NativeNet
 			this.bufferPointer = null;
 			this.size = 0;
 			this.capacity = 0;
+			this.pivot = 0;
 			this.reserveCapacity(initialCapacity);
 		}
 
@@ -78,6 +81,7 @@ namespace NativeNet
 				this.bufferPointer = null;
 				this.size = list.count();
 				this.capacity = list.count();
+				this.pivot = 0;
 				this.reserveCapacity(this.capacity);
 				uint i = 0;
 
@@ -104,6 +108,7 @@ namespace NativeNet
 				this.bufferPointer = (GenericType*)(NativeMemory.Alloc((nuint)(Unsafe.SizeOf<GenericType>() * other.capacity)));
 				this.size = other.size;
 				this.capacity = other.capacity;
+				this.pivot = other.pivot;
 				Unsafe.CopyBlock(this.bufferPointer,other.bufferPointer,(uint)(Unsafe.SizeOf<GenericType>() * other.size));
 			}
 		}
@@ -119,6 +124,7 @@ namespace NativeNet
 				this.bufferPointer = null;
 				this.size = 0;
 				this.capacity = 0;
+				this.pivot = 0;
 			}
 		}
 
@@ -205,17 +211,25 @@ namespace NativeNet
 		/// <returns>int</returns>
 		public override int GetHashCode()
 		{
-			return HashCode.Combine(this.size,this.capacity,(UIntPtr)(this.bufferPointer));
+			return HashCode.Combine(this.size,this.capacity,(UIntPtr)(this.bufferPointer),this.pivot);
 		}
 
 		/// <summary>
 		///		dynamic
 		/// </summary>
 		/// <returns>void</returns>
-		void IDisposable.Dispose()
+		public void Dispose()
 		{
+			if (this.bufferPointer is not null)
+			{
+				NativeMemory.Free(this.bufferPointer);
+				this.bufferPointer = null;
+			}
+
+			this.size = 0;
+			this.capacity = 0;
+			this.pivot = 0;
 			GC.SuppressFinalize(this);
-			this.clear();
 		}
 
 		/// <summary>
@@ -240,7 +254,57 @@ namespace NativeNet
 			}
 			else
 			{
-				return ((new ReadOnlySpan<GenericType>(this.bufferPointer,(int)(this.size))).Contains(element) == true);
+				return ((new ReadOnlySpan<GenericType>((this.bufferPointer + this.pivot),(int)(this.size))).Contains(element) == true);
+			}
+		}
+
+		/// <summary>
+		///		dynamic
+		/// </summary>
+		/// <param name="element"></param>
+		/// <returns>void</returns>
+		public void push(GenericType element)
+		{
+			if (this.capacity == 0)
+			{
+				this.reserveCapacity(2);
+			}
+
+			if ((this.pivot + this.size) >= this.capacity)
+			{
+				if (this.pivot >= (this.capacity / 4))
+				{
+					Buffer.MemoryCopy((this.bufferPointer + this.pivot),this.bufferPointer,(ulong)(Unsafe.SizeOf<GenericType>() * this.capacity),(ulong)(Unsafe.SizeOf<GenericType>() * this.size));
+					this.pivot = 0;
+				}
+				else
+				{
+					this.increaseCapacity();
+				}
+			}
+
+			(this.bufferPointer)[this.pivot + this.size] = element;
+			(this.size)++;
+		}
+
+		/// <summary>
+		///		dynamic
+		/// </summary>
+		/// <returns>GenericType</returns>
+		/// <exception cref="NativeNetException"></exception>
+		public GenericType pop()
+		{
+			if ((this.bufferPointer == null) || (this.size == 0) || (this.capacity == 0))
+			{
+				throw new NativeNetException("The current instance of `NativeQueue` is empty!");
+			}
+			else
+			{
+				ref GenericType result = ref (this.bufferPointer)[this.pivot];
+				(this.pivot)++;
+				(this.size)--;
+
+				return result;
 			}
 		}
 
@@ -253,11 +317,11 @@ namespace NativeNet
 		{
 			if ((this.bufferPointer == null) || (this.size == 0) || (this.capacity == 0))
 			{
-				throw new NativeNetException("The current instance of `NativeStack` is empty!");
+				throw new NativeNetException("The current instance of `NativeQueue` is empty!");
 			}
 			else
 			{
-				return (this.bufferPointer)[0];
+				return (this.bufferPointer)[this.pivot];
 			}
 		}
 
@@ -269,7 +333,7 @@ namespace NativeNet
 		{
 			if ((this.bufferPointer is not null) && (this.capacity > 0))
 			{
-				int i = 0;
+				uint i = 0;
 
 				for (i = 0;i < this.capacity;i++)
 				{
