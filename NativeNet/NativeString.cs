@@ -47,7 +47,7 @@ namespace NativeNet
 		/// <exception cref="NativeNetException"></exception>
 		static NativeString()
 		{
-			if ((typeof(GenericTypeOfCharacter) != typeof(char8_t)) && (typeof(GenericTypeOfCharacter) != typeof(char16_t)) && (typeof(GenericTypeOfCharacter) != typeof(char32_t)))
+			if ((typeof(GenericTypeOfCharacter) != typeof(NativeUTF8Character)) && (typeof(GenericTypeOfCharacter) != typeof(NativeUTF16Character)) && (typeof(GenericTypeOfCharacter) != typeof(NativeUTF32Character)))
 			{
 				throw new NativeNetException("Can't instantiate an instance of `NativeString` by the constructor of `NativeString` from an invalid generic type argument: `" + typeof(GenericTypeOfCharacter).Name + "`!");
 			}
@@ -78,7 +78,7 @@ namespace NativeNet
 			}
 			else
 			{
-				if (typeof(GenericTypeOfCharacter) == typeof(char8_t))
+				if (typeof(GenericTypeOfCharacter) == typeof(NativeUTF8Character))
 				{
 					this.length = (uint)(byteSpan.Length);
 					this.capacity = this.length;
@@ -90,7 +90,7 @@ namespace NativeNet
 						Unsafe.CopyBlock(this.bufferPointer,bytePointer,byteCount);
 					}
 				}
-				else if (typeof(GenericTypeOfCharacter) == typeof(char16_t))
+				else if (typeof(GenericTypeOfCharacter) == typeof(NativeUTF16Character))
 				{
 					char[] utf16Bytes = new char[Encoding.UTF8.GetCharCount(byteSpan)];
 					Encoding.UTF8.GetChars(byteSpan,utf16Bytes);
@@ -104,7 +104,7 @@ namespace NativeNet
 						Unsafe.CopyBlock(this.bufferPointer,characterPointer,byteCount);
 					}
 				}
-				else if (typeof(GenericTypeOfCharacter) == typeof(char32_t))
+				else if (typeof(GenericTypeOfCharacter) == typeof(NativeUTF32Character))
 				{
 					Span<char> characterSpan = stackalloc char[Encoding.UTF8.GetCharCount(byteSpan)];
 					Encoding.UTF8.GetChars(byteSpan,characterSpan);
@@ -148,7 +148,7 @@ namespace NativeNet
 				}
 				else
 				{
-					if (typeof(GenericTypeOfCharacter) == typeof(char8_t))
+					if (typeof(GenericTypeOfCharacter) == typeof(NativeUTF8Character))
 					{
 						byte[] utf8Bytes = Encoding.UTF8.GetBytes(primitiveString);
 						this.length = (uint)(utf8Bytes.Length);
@@ -161,7 +161,7 @@ namespace NativeNet
 							Unsafe.CopyBlock(this.bufferPointer,bytePointer,byteCount);
 						}
 					}
-					else if (typeof(GenericTypeOfCharacter) == typeof(char16_t))
+					else if (typeof(GenericTypeOfCharacter) == typeof(NativeUTF16Character))
 					{
 						this.length = (uint)(primitiveString.Length);
 						this.capacity = this.length;
@@ -173,7 +173,7 @@ namespace NativeNet
 							Unsafe.CopyBlock(this.bufferPointer,characterPointer,byteCount);
 						}
 					}
-					else if (typeof(GenericTypeOfCharacter) == typeof(char32_t))
+					else if (typeof(GenericTypeOfCharacter) == typeof(NativeUTF32Character))
 					{
 						byte[] utf32Bytes = Encoding.UTF32.GetBytes(primitiveString);
 						this.length = (uint)(utf32Bytes.Length / 4);
@@ -429,26 +429,7 @@ namespace NativeNet
 		/// <returns>bool</returns>
 		public override bool Equals(object other)
 		{
-			if (ReferenceEquals(other,null))
-			{
-				return false;
-			}
-			else if (ReferenceEquals(this,other))
-			{
-				return true;
-			}
-			else if (other.GetType() != this.GetType())
-			{
-				return false;
-			}
-			else if (other is NativeString<GenericTypeOfCharacter> instance)
-			{
-				return (this == instance);
-			}
-			else
-			{
-				return false;
-			}
+			return ((other is NativeString<GenericTypeOfCharacter> instance) && (this == instance));
 		}
 
 		/// <summary>
@@ -475,17 +456,17 @@ namespace NativeNet
 			}
 			else
 			{
-				if (typeof(GenericTypeOfCharacter) == typeof(char8_t))
+				if (typeof(GenericTypeOfCharacter) == typeof(NativeUTF8Character))
 				{
 					return Encoding.UTF8.GetString((byte*)(this.bufferPointer),(int)(this.length));
 				}
-				else if (typeof(GenericTypeOfCharacter) == typeof(char16_t))
+				else if (typeof(GenericTypeOfCharacter) == typeof(NativeUTF16Character))
 				{
 					return new string((char*)(this.bufferPointer),0,(int)(this.length));
 				}
-				else if (typeof(GenericTypeOfCharacter) == typeof(char32_t))
+				else if (typeof(GenericTypeOfCharacter) == typeof(NativeUTF32Character))
 				{
-					return Encoding.UTF32.GetString((byte*)(this.bufferPointer),(int)(this.length * sizeof(char32_t)));
+					return Encoding.UTF32.GetString((byte*)(this.bufferPointer),(int)(this.length * sizeof(NativeUTF32Character)));
 				}
 				else
 				{

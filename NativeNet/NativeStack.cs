@@ -176,26 +176,7 @@ namespace NativeNet
 		/// <returns>bool</returns>
 		public override bool Equals(object other)
 		{
-			if (ReferenceEquals(other,null))
-			{
-				return false;
-			}
-			else if (ReferenceEquals(this,other))
-			{
-				return true;
-			}
-			else if (other.GetType() != this.GetType())
-			{
-				return false;
-			}
-			else if (other is NativeStack<GenericType> instance)
-			{
-				return (this == instance);
-			}
-			else
-			{
-				return false;
-			}
+			return ((other is NativeStack<GenericType> instance) && (this == instance));
 		}
 
 		/// <summary>

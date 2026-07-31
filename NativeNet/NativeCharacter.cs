@@ -105,36 +105,36 @@ namespace NativeNet
 	};
 
 	/// <summary>
-	///		C# structure: `UTF8Character`.
+	///		C# structure: `NativeUTF8Character`.
 	/// </summary>
-	public readonly struct UTF8Character : NativeCharacterTraits<UTF8Character>
+	public readonly struct NativeUTF8Character : NativeCharacterTraits<NativeUTF8Character>
 	{
 		private readonly byte composedData;
 
 
 		/// <summary>
-		/// 	Constructor of `UTF8Character`.
+		/// 	Constructor of `NativeUTF8Character`.
 		/// </summary>
 		/// <param name="utf8CharacterData"></param>
-		public UTF8Character(byte utf8CharacterData)
+		public NativeUTF8Character(byte utf8CharacterData)
 		{
 			this.composedData = utf8CharacterData;
 		}
 
 		/// <summary>
-		/// 	Constructor of `UTF8Character`.
+		/// 	Constructor of `NativeUTF8Character`.
 		/// </summary>
 		/// <param name="utf16CharacterData"></param>
-		public UTF8Character(char utf16CharacterData)
+		public NativeUTF8Character(char utf16CharacterData)
 		{
 			this.composedData = (byte)((new Rune(utf16CharacterData)).Value);
 		}
 
 		/// <summary>
-		///		Copy constructor of `UTF8Character`.
+		///		Copy constructor of `NativeUTF8Character`.
 		/// </summary>
 		/// <param name="other"></param>
-		public UTF8Character(UTF8Character other)
+		public NativeUTF8Character(NativeUTF8Character other)
 		{
 			this.composedData = other.composedData;
 		}
@@ -142,25 +142,25 @@ namespace NativeNet
 		/// <summary>
 		///		static
 		///		implicit
-		///		operator UTF8Character()
+		///		operator NativeUTF8Character()
 		/// </summary>
 		/// <param name="instance"></param>
-		/// <returns>UTF8Character</returns>
-		public static implicit operator UTF8Character(byte instance)
+		/// <returns>NativeUTF8Character</returns>
+		public static implicit operator NativeUTF8Character(byte instance)
 		{
-			return new UTF8Character(instance);
+			return new NativeUTF8Character(instance);
 		}
 
 		/// <summary>
 		///		static
 		///		explicit
-		///		operator UTF8Character()
+		///		operator NativeUTF8Character()
 		/// </summary>
 		/// <param name="instance"></param>
-		/// <returns>UTF8Character</returns>
-		public static explicit operator UTF8Character(char instance)
+		/// <returns>NativeUTF8Character</returns>
+		public static explicit operator NativeUTF8Character(char instance)
 		{
-			return new UTF8Character(instance);
+			return new NativeUTF8Character(instance);
 		}
 
 		/// <summary>
@@ -170,7 +170,7 @@ namespace NativeNet
 		/// </summary>
 		/// <param name="instance"></param>
 		/// <returns>byte</returns>
-		public static implicit operator byte(UTF8Character instance)
+		public static implicit operator byte(NativeUTF8Character instance)
 		{
 			return instance.composedData;
 		}
@@ -182,7 +182,7 @@ namespace NativeNet
 		/// </summary>
 		/// <param name="instance"></param>
 		/// <returns>uint</returns>
-		public static explicit operator uint(UTF8Character instance)
+		public static explicit operator uint(NativeUTF8Character instance)
 		{
 			return instance.composedData;
 		}
@@ -194,7 +194,7 @@ namespace NativeNet
 		/// <param name="first"></param>
 		/// <param name="second"></param>
 		/// <returns>bool</returns>
-		public static bool operator==(UTF8Character first,UTF8Character second)
+		public static bool operator==(NativeUTF8Character first,NativeUTF8Character second)
 		{
 			return (first.composedData == second.composedData);
 		}
@@ -206,7 +206,7 @@ namespace NativeNet
 		/// <param name="first"></param>
 		/// <param name="second"></param>
 		/// <returns>bool</returns>
-		public static bool operator!=(UTF8Character first,UTF8Character second)
+		public static bool operator!=(NativeUTF8Character first,NativeUTF8Character second)
 		{
 			return (first.composedData != second.composedData);
 		}
@@ -218,7 +218,7 @@ namespace NativeNet
 		/// <param name="first"></param>
 		/// <param name="second"></param>
 		/// <returns>bool</returns>
-		public static bool operator<(UTF8Character first,UTF8Character second)
+		public static bool operator<(NativeUTF8Character first,NativeUTF8Character second)
 		{
 			return (first.composedData < second.composedData);
 		}
@@ -230,7 +230,7 @@ namespace NativeNet
 		/// <param name="first"></param>
 		/// <param name="second"></param>
 		/// <returns></returns>
-		public static bool operator>(UTF8Character first,UTF8Character second)
+		public static bool operator>(NativeUTF8Character first,NativeUTF8Character second)
 		{
 			return (first.composedData > second.composedData);
 		}
@@ -242,7 +242,7 @@ namespace NativeNet
 		/// <param name="first"></param>
 		/// <param name="second"></param>
 		/// <returns></returns>
-		public static bool operator<=(UTF8Character first,UTF8Character second)
+		public static bool operator<=(NativeUTF8Character first,NativeUTF8Character second)
 		{
 			return (first.composedData <= second.composedData);
 		}
@@ -254,7 +254,7 @@ namespace NativeNet
 		/// <param name="first"></param>
 		/// <param name="second"></param>
 		/// <returns></returns>
-		public static bool operator>=(UTF8Character first,UTF8Character second)
+		public static bool operator>=(NativeUTF8Character first,NativeUTF8Character second)
 		{
 			return (first.composedData >= second.composedData);
 		}
@@ -267,14 +267,7 @@ namespace NativeNet
 		/// <returns>bool</returns>
 		public override bool Equals(object other)
 		{
-			if (other is UTF8Character instance)
-			{
-				return (this == instance);
-			}
-			else
-			{
-				return false;
-			}
+			return ((other is NativeUTF8Character instance) && (this == instance));
 		}
 
 		/// <summary>
@@ -299,36 +292,36 @@ namespace NativeNet
 	};
 
 	/// <summary>
-	///		C# structure: `UTF16Character`.
+	///		C# structure: `NativeUTF16Character`.
 	/// </summary>
-	public readonly struct UTF16Character : NativeCharacterTraits<UTF16Character>
+	public readonly struct NativeUTF16Character : NativeCharacterTraits<NativeUTF16Character>
 	{
 		private readonly char composedData;
 
 
 		/// <summary>
-		/// 	Constructor of `UTF16Character`.
+		/// 	Constructor of `NativeUTF16Character`.
 		/// </summary>
 		/// <param name="utf8CharacterData"></param>
-		public UTF16Character(byte utf8CharacterData)
+		public NativeUTF16Character(byte utf8CharacterData)
 		{
 			this.composedData = (char)utf8CharacterData;
 		}
 
 		/// <summary>
-		/// 	Constructor of `UTF16Character`.
+		/// 	Constructor of `NativeUTF16Character`.
 		/// </summary>
 		/// <param name="utf16CharacterData"></param>
-		public UTF16Character(char utf16CharacterData)
+		public NativeUTF16Character(char utf16CharacterData)
 		{
 			this.composedData = utf16CharacterData;
 		}
 
 		/// <summary>
-		///		Copy constructor of `UTF16Character`.
+		///		Copy constructor of `NativeUTF16Character`.
 		/// </summary>
 		/// <param name="other"></param>
-		public UTF16Character(UTF16Character other)
+		public NativeUTF16Character(NativeUTF16Character other)
 		{
 			this.composedData = other.composedData;
 		}
@@ -336,25 +329,25 @@ namespace NativeNet
 		/// <summary>
 		///		static
 		///		explicit
-		///		operator UTF16Character()
+		///		operator NativeUTF16Character()
 		/// </summary>
 		/// <param name="instance"></param>
-		/// <returns>UTF16Character</returns>
-		public static explicit operator UTF16Character(byte instance)
+		/// <returns>NativeUTF16Character</returns>
+		public static explicit operator NativeUTF16Character(byte instance)
 		{
-			return new UTF16Character(instance);
+			return new NativeUTF16Character(instance);
 		}
 
 		/// <summary>
 		///		static
 		///		implicit
-		///		operator UTF16Character()
+		///		operator NativeUTF16Character()
 		/// </summary>
 		/// <param name="instance"></param>
-		/// <returns>UTF16Character</returns>
-		public static implicit operator UTF16Character(char instance)
+		/// <returns>NativeUTF16Character</returns>
+		public static implicit operator NativeUTF16Character(char instance)
 		{
-			return new UTF16Character(instance);
+			return new NativeUTF16Character(instance);
 		}
 
 		/// <summary>
@@ -364,7 +357,7 @@ namespace NativeNet
 		/// </summary>
 		/// <param name="instance"></param>
 		/// <returns>char</returns>
-		public static implicit operator char(UTF16Character instance)
+		public static implicit operator char(NativeUTF16Character instance)
 		{
 			return instance.composedData;
 		}
@@ -376,7 +369,7 @@ namespace NativeNet
 		/// </summary>
 		/// <param name="instance"></param>
 		/// <returns>uint</returns>
-		public static explicit operator uint(UTF16Character instance)
+		public static explicit operator uint(NativeUTF16Character instance)
 		{
 			return instance.composedData;
 		}
@@ -388,7 +381,7 @@ namespace NativeNet
 		/// <param name="first"></param>
 		/// <param name="second"></param>
 		/// <returns>bool</returns>
-		public static bool operator==(UTF16Character first,UTF16Character second)
+		public static bool operator==(NativeUTF16Character first,NativeUTF16Character second)
 		{
 			return (first.composedData == second.composedData);
 		}
@@ -400,7 +393,7 @@ namespace NativeNet
 		/// <param name="first"></param>
 		/// <param name="second"></param>
 		/// <returns>bool</returns>
-		public static bool operator!=(UTF16Character first,UTF16Character second)
+		public static bool operator!=(NativeUTF16Character first,NativeUTF16Character second)
 		{
 			return (first.composedData != second.composedData);
 		}
@@ -412,7 +405,7 @@ namespace NativeNet
 		/// <param name="first"></param>
 		/// <param name="second"></param>
 		/// <returns>bool</returns>
-		public static bool operator<(UTF16Character first,UTF16Character second)
+		public static bool operator<(NativeUTF16Character first,NativeUTF16Character second)
 		{
 			return (first.composedData < second.composedData);
 		}
@@ -424,7 +417,7 @@ namespace NativeNet
 		/// <param name="first"></param>
 		/// <param name="second"></param>
 		/// <returns></returns>
-		public static bool operator>(UTF16Character first,UTF16Character second)
+		public static bool operator>(NativeUTF16Character first,NativeUTF16Character second)
 		{
 			return (first.composedData > second.composedData);
 		}
@@ -436,7 +429,7 @@ namespace NativeNet
 		/// <param name="first"></param>
 		/// <param name="second"></param>
 		/// <returns></returns>
-		public static bool operator<=(UTF16Character first,UTF16Character second)
+		public static bool operator<=(NativeUTF16Character first,NativeUTF16Character second)
 		{
 			return (first.composedData <= second.composedData);
 		}
@@ -448,7 +441,7 @@ namespace NativeNet
 		/// <param name="first"></param>
 		/// <param name="second"></param>
 		/// <returns></returns>
-		public static bool operator>=(UTF16Character first,UTF16Character second)
+		public static bool operator>=(NativeUTF16Character first,NativeUTF16Character second)
 		{
 			return (first.composedData >= second.composedData);
 		}
@@ -461,14 +454,7 @@ namespace NativeNet
 		/// <returns>bool</returns>
 		public override bool Equals(object other)
 		{
-			if (other is UTF16Character instance)
-			{
-				return (this == instance);
-			}
-			else
-			{
-				return false;
-			}
+			return ((other is NativeUTF16Character instance) && (this == instance));
 		}
 
 		/// <summary>
@@ -493,45 +479,45 @@ namespace NativeNet
 	};
 
 	/// <summary>
-	///		C# structure: `UTF32Character`.
+	///		C# structure: `NativeUTF32Character`.
 	/// </summary>
-	public readonly struct UTF32Character : NativeCharacterTraits<UTF32Character>
+	public readonly struct NativeUTF32Character : NativeCharacterTraits<NativeUTF32Character>
 	{
 		private readonly uint composedData;
 
 
 		/// <summary>
-		/// 	Constructor of `UTF32Character`.
+		/// 	Constructor of `NativeUTF32Character`.
 		/// </summary>
 		/// <param name="utf8CharacterData"></param>
-		public UTF32Character(byte utf8CharacterData)
+		public NativeUTF32Character(byte utf8CharacterData)
 		{
 			this.composedData = (uint)((new Rune(utf8CharacterData)).Value);
 		}
 
 		/// <summary>
-		/// 	Constructor of `UTF32Character`.
+		/// 	Constructor of `NativeUTF32Character`.
 		/// </summary>
 		/// <param name="utf16CharacterData"></param>
-		public UTF32Character(char utf16CharacterData)
+		public NativeUTF32Character(char utf16CharacterData)
 		{
 			this.composedData = (uint)((new Rune(utf16CharacterData)).Value);
 		}
 
 		/// <summary>
-		///		Constructor of `UTF32Character`.
+		///		Constructor of `NativeUTF32Character`.
 		/// </summary>
 		/// <param name="codePoint"></param>
-		public UTF32Character(uint codePoint)
+		public NativeUTF32Character(uint codePoint)
 		{
 			this.composedData = codePoint;
 		}
 
 		/// <summary>
-		///		Copy constructor of `UTF32Character`.
+		///		Copy constructor of `NativeUTF32Character`.
 		/// </summary>
 		/// <param name="other"></param>
-		public UTF32Character(UTF32Character other)
+		public NativeUTF32Character(NativeUTF32Character other)
 		{
 			this.composedData = other.composedData;
 		}
@@ -539,37 +525,37 @@ namespace NativeNet
 		/// <summary>
 		///		static
 		///		implicit
-		///		operator UTF32Character()
+		///		operator NativeUTF32Character()
 		/// </summary>
 		/// <param name="byteData"></param>
-		/// <returns>UTF32Character</returns>
-		public static explicit operator UTF32Character(byte byteData)
+		/// <returns>NativeUTF32Character</returns>
+		public static explicit operator NativeUTF32Character(byte byteData)
 		{
-			return new UTF32Character(byteData);
+			return new NativeUTF32Character(byteData);
 		}
 
 		/// <summary>
 		///		static
 		///		implicit
-		///		operator UTF32Character()
+		///		operator NativeUTF32Character()
 		/// </summary>
 		/// <param name="character"></param>
-		/// <returns>UTF32Character</returns>
-		public static implicit operator UTF32Character(char character)
+		/// <returns>NativeUTF32Character</returns>
+		public static implicit operator NativeUTF32Character(char character)
 		{
-			return new UTF32Character(character);
+			return new NativeUTF32Character(character);
 		}
 
 		/// <summary>
 		/// 	static
 		/// 	explicit
-		/// 	operator UTF32Character()
+		/// 	operator NativeUTF32Character()
 		/// </summary>
 		/// <param name="codePoint"></param>
-		/// <returns>UTF32Character</returns>
-		public static explicit operator UTF32Character(uint codePoint)
+		/// <returns>NativeUTF32Character</returns>
+		public static explicit operator NativeUTF32Character(uint codePoint)
 		{
-			return new UTF32Character(codePoint);
+			return new NativeUTF32Character(codePoint);
 		}
 
 		/// <summary>
@@ -579,7 +565,7 @@ namespace NativeNet
 		/// </summary>
 		/// <param name="instance"></param>
 		/// <returns>int</returns>
-		public static explicit operator uint(UTF32Character instance)
+		public static explicit operator uint(NativeUTF32Character instance)
 		{
 			return instance.composedData;
 		}
@@ -591,7 +577,7 @@ namespace NativeNet
 		/// <param name="first"></param>
 		/// <param name="second"></param>
 		/// <returns>bool</returns>
-		public static bool operator==(UTF32Character first,UTF32Character second)
+		public static bool operator==(NativeUTF32Character first,NativeUTF32Character second)
 		{
 			return (first.composedData == second.composedData);
 		}
@@ -603,7 +589,7 @@ namespace NativeNet
 		/// <param name="first"></param>
 		/// <param name="second"></param>
 		/// <returns>bool</returns>
-		public static bool operator!=(UTF32Character first,UTF32Character second)
+		public static bool operator!=(NativeUTF32Character first,NativeUTF32Character second)
 		{
 			return (first.composedData != second.composedData);
 		}
@@ -615,7 +601,7 @@ namespace NativeNet
 		/// <param name="first"></param>
 		/// <param name="second"></param>
 		/// <returns>bool</returns>
-		public static bool operator<(UTF32Character first,UTF32Character second)
+		public static bool operator<(NativeUTF32Character first,NativeUTF32Character second)
 		{
 			return (first.composedData < second.composedData);
 		}
@@ -627,7 +613,7 @@ namespace NativeNet
 		/// <param name="first"></param>
 		/// <param name="second"></param>
 		/// <returns>bool</returns>
-		public static bool operator>(UTF32Character first,UTF32Character second)
+		public static bool operator>(NativeUTF32Character first,NativeUTF32Character second)
 		{
 			return (first.composedData > second.composedData);
 		}
@@ -639,7 +625,7 @@ namespace NativeNet
 		/// <param name="first"></param>
 		/// <param name="second"></param>
 		/// <returns>bool</returns>
-		public static bool operator<=(UTF32Character first,UTF32Character second)
+		public static bool operator<=(NativeUTF32Character first,NativeUTF32Character second)
 		{
 			return (first.composedData <= second.composedData);
 		}
@@ -651,7 +637,7 @@ namespace NativeNet
 		/// <param name="first"></param>
 		/// <param name="second"></param>
 		/// <returns>bool</returns>
-		public static bool operator>=(UTF32Character first,UTF32Character second)
+		public static bool operator>=(NativeUTF32Character first,NativeUTF32Character second)
 		{
 			return (first.composedData >= second.composedData);
 		}
@@ -664,14 +650,7 @@ namespace NativeNet
 		/// <returns>bool</returns>
 		public override bool Equals(object other)
 		{
-			if (other is UTF32Character instance)
-			{
-				return (this == instance);
-			}
-			else
-			{
-				return false;
-			}
+			return ((other is NativeUTF32Character instance) && (this == instance));
 		}
 
 		/// <summary>

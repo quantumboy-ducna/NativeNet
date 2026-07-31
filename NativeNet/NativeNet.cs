@@ -46,7 +46,7 @@ namespace NativeNet
 		
 		/*public static void Main()
 		{
-			NativeNet.NativeList<int> list = new NativeNet.NativeList<int>();
+			NativeList<int> list = new NativeList<int>();
 			list.add(0);
 			list.add(0);
 			list.add(0);
@@ -54,9 +54,9 @@ namespace NativeNet
 			list.insert(0,0);
 		}*/
 		
-		public static void Main()
+		/*public static void Main()
 		{
-			NativeNet.NativeQueue<int> queue = new NativeNet.NativeQueue<int>(5);
+			NativeQueue<int> queue = new NativeQueue<int>(5);
 			queue.push(0);
 			queue.push(1);
 			queue.push(2);
@@ -66,6 +66,6 @@ namespace NativeNet
 			queue.pop();
 			queue.pop();
 			queue.push(5);
-		}
+		}*/
 	};
 };
