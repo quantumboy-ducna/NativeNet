@@ -115,14 +115,7 @@ namespace NativeNet
 		/// <returns>bool</returns>
 		public override bool Equals(object other)
 		{
-			if (other is NativeNetException instance)
-			{
-				return (this == instance);
-			}
-			else
-			{
-				return false;
-			}
+			return ((other is NativeNetException instance) && (this == instance));
 		}
 
 		/// <summary>
