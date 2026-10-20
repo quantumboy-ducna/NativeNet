@@ -1,84 +1,107 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
-  <PropertyGroup>
-	<TargetFramework>net10.0</TargetFramework>
-	<ImplicitUsings>enable</ImplicitUsings>
-	<Nullable>disable</Nullable>
-	<AssemblyTitle>NativeNet</AssemblyTitle>
-	<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-	<GenerateDocumentationFile>True</GenerateDocumentationFile>
-	<PlatformTarget>AnyCPU</PlatformTarget>
-	<OutputType>Library</OutputType>
-	<AssemblyVersion>2026.0.0.0</AssemblyVersion>
-	<FileVersion>2026.0.0.0</FileVersion>
-	<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
-	<Title>NativeNet</Title>
-	<LangVersion>12.0</LangVersion>
-	<ErrorReport>none</ErrorReport>
-	<Copyright>Copyright © 2026, Nguyễn Anh Đức (workofduc@gmail.com).</Copyright>
-	<Description>NativeNet - a native library but written in unsafe C#.</Description>
-	<RepositoryType>git</RepositoryType>
-	<PackageTags>NativeNet;nativenet;unsafe;native;C#;csharp;csh;</PackageTags>
-	<PackageLicenseFile>LICENSE</PackageLicenseFile>
-	<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-	<AnalysisLevel>latest</AnalysisLevel>
-	<PackageReadmeFile>README.md</PackageReadmeFile>
-	<StartupObject>NativeNet.NativeNet</StartupObject>
-	<RootNamespace>NativeNet</RootNamespace>
-	<SignAssembly>False</SignAssembly>
-	<Authors>Nguyễn Anh Đức</Authors>
-	<PackageProjectUrl>https://www.github.com/QuantumBoy1010/NativeNet</PackageProjectUrl>
-	<RepositoryUrl>https://www.github.com/QuantumBoy1010/NativeNet</RepositoryUrl>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-	<Optimize>True</Optimize>
-	<IsAotCompatible>True</IsAotCompatible>
-	<WarningLevel>6</WarningLevel>
-	<TreatWarningsAsErrors>False</TreatWarningsAsErrors>
-	<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-	<IsPublishable>False</IsPublishable>
-	<IsTrimmable>False</IsTrimmable>
-	<NoWarn>CS1701;CS1702;CS1570;CS1587;CS1591;CS8500;CA1050;IDE0001;IDE0003;IDE0017;IDE0028;IDE0041;IDE0047;IDE0054;IDE0090;IDE1006;</NoWarn>
-	<FileAlignment>1024</FileAlignment>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-	<IsAotCompatible>True</IsAotCompatible>
-	<WarningLevel>6</WarningLevel>
-	<TreatWarningsAsErrors>False</TreatWarningsAsErrors>
-	<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-	<IsPublishable>False</IsPublishable>
-	<Optimize>True</Optimize>
-	<IsTrimmable>False</IsTrimmable>
-	<NoWarn>CS1701;CS1702;CS1570;CS1587;CS1591;CS8500;CA1050;IDE0001;IDE0003;IDE0017;IDE0028;IDE0041;IDE0047;IDE0054;IDE0090;IDE1006;</NoWarn>
-	<FileAlignment>1024</FileAlignment>
-  </PropertyGroup>
-
-  <ItemGroup>
-	<None Include="..\LICENSE">
-	  <Pack>True</Pack>
-	  <PackagePath>\</PackagePath>
-	</None>
-	<None Include="..\README.md">
-	  <Pack>True</Pack>
-	  <PackagePath>\</PackagePath>
-	</None>
-  </ItemGroup>
-
-  <ItemGroup>
-	<Compile Update="Properties\Resources.Designer.cs">
-	  <DesignTime>True</DesignTime>
-	  <AutoGen>True</AutoGen>
-	  <DependentUpon>Resources.resx</DependentUpon>
-	</Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-	<EmbeddedResource Update="Properties\Resources.resx">
-	  <Generator>ResXFileCodeGenerator</Generator>
-	  <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-	</EmbeddedResource>
-  </ItemGroup>
-
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<OutputType>Library</OutputType>
+		<LangVersion>12.0</LangVersion>
+		<TargetFramework>net10.0</TargetFramework>
+		<Platforms>x64;ARM64</Platforms>
+		<Configurations>Debug - Dynamic Library;Release - Dynamic Library</Configurations>
+		<RootNamespace>NativeNet</RootNamespace>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>disable</Nullable>
+		<AssemblyTitle>NativeNet</AssemblyTitle>
+		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+		<RepositoryType>git</RepositoryType>
+		<PackageProjectUrl>https://www.github.com/QuantumBoy1010/NativeNet</PackageProjectUrl>
+		<RepositoryUrl>https://www.github.com/QuantumBoy1010/NativeNet</RepositoryUrl>
+		<Title>NativeNet</Title>
+		<Authors>Nguyễn Anh Đức</Authors>
+		<Copyright>Copyright © 2026, Nguyễn Anh Đức (workofduc@gmail.com).</Copyright>
+		<Description>NativeNet - a native library but written in unsafe C#.</Description>
+		<PackageTags>NativeNet;nativenet;unsafe;native;C#;csharp;csh;</PackageTags>
+		<AssemblyVersion>2026.0.0.0</AssemblyVersion>
+		<FileVersion>2026.0.0.0</FileVersion>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<SignAssembly>False</SignAssembly>
+		<AnalysisLevel>latest</AnalysisLevel>
+		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<ErrorReport>none</ErrorReport>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Dynamic Library|x64'">
+		<PlatformTarget>x64</PlatformTarget>
+		<Optimize>False</Optimize>
+		<DefineConstants>DEBUG;TRACE</DefineConstants>
+		<IsAotCompatible>True</IsAotCompatible>
+		<WarningLevel>6</WarningLevel>
+		<TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+		<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+		<IsPublishable>False</IsPublishable>
+		<IsTrimmable>False</IsTrimmable>
+		<FileAlignment>1024</FileAlignment>
+		<NoWarn>CS1701;CS1702;CS1570;CS1587;CS1591;CS8500;CA1050;IDE0001;IDE0003;IDE0017;IDE0028;IDE0041;IDE0047;IDE0054;IDE0090;IDE1006;</NoWarn>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - Dynamic Library|ARM64'">
+		<PlatformTarget>ARM64</PlatformTarget>
+		<Optimize>False</Optimize>
+		<DefineConstants>DEBUG;TRACE</DefineConstants>
+		<IsAotCompatible>True</IsAotCompatible>
+		<WarningLevel>6</WarningLevel>
+		<TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+		<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+		<IsPublishable>False</IsPublishable>
+		<IsTrimmable>False</IsTrimmable>
+		<FileAlignment>1024</FileAlignment>
+		<NoWarn>CS1701;CS1702;CS1570;CS1587;CS1591;CS8500;CA1050;IDE0001;IDE0003;IDE0017;IDE0028;IDE0041;IDE0047;IDE0054;IDE0090;IDE1006;</NoWarn>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release - Dynamic Library|x64'">
+		<PlatformTarget>x64</PlatformTarget>
+		<Optimize>True</Optimize>
+		<DefineConstants>TRACE</DefineConstants>
+		<IsAotCompatible>True</IsAotCompatible>
+		<WarningLevel>6</WarningLevel>
+		<TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+		<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+		<IsPublishable>False</IsPublishable>
+		<IsTrimmable>False</IsTrimmable>
+		<FileAlignment>1024</FileAlignment>
+		<NoWarn>CS1701;CS1702;CS1570;CS1587;CS1591;CS8500;CA1050;IDE0001;IDE0003;IDE0017;IDE0028;IDE0041;IDE0047;IDE0054;IDE0090;IDE1006;</NoWarn>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release - Dynamic Library|ARM64'">
+		<PlatformTarget>ARM64</PlatformTarget>
+		<Optimize>True</Optimize>
+		<DefineConstants>TRACE</DefineConstants>
+		<IsAotCompatible>True</IsAotCompatible>
+		<WarningLevel>6</WarningLevel>
+		<TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+		<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+		<IsPublishable>False</IsPublishable>
+		<IsTrimmable>False</IsTrimmable>
+		<FileAlignment>1024</FileAlignment>
+		<NoWarn>CS1701;CS1702;CS1570;CS1587;CS1591;CS8500;CA1050;IDE0001;IDE0003;IDE0017;IDE0028;IDE0041;IDE0047;IDE0054;IDE0090;IDE1006;</NoWarn>
+	</PropertyGroup>
+	<ItemGroup>
+		<None Include="..\LICENSE">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+		<None Include="..\README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
+	<ItemGroup>
+		<Compile Update="Properties\Resources.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Resources.resx</DependentUpon>
+		</Compile>
+	</ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Update="Properties\Resources.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+	</ItemGroup>
 </Project>
